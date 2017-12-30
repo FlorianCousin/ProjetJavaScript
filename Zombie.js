@@ -3,9 +3,10 @@ Une classe abstraite qui correspond au type des zombie en général
 **/
 class Zombie {
 
-	var pv;
-
-	constructor() {}
+	constructor() {
+		// Le nombre de PV actuel du zombie
+		this.pv = 2;
+	}
 	
 }
 
@@ -14,14 +15,18 @@ Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
 **/
 class ZombieFaible extends Zombie {
 
-	// Le nombre de PV du zombie faible quand celui-ci apparaît
-	static var pvMax = 1;
 	// Le nombre de point acquis à la mort d'un zombie faible
-	static var gain = 1;
-	
-	
+	//static final var gain = 1;
 
-	constructor() {}
+	constructor() {
+		super();
+		
+		// Le nombre de PV max du zombie faible
+		this.pvMax = 1;
+		
+		// Le nombre de point rapporté
+		this.gain = 1;
+	}
 
 }
 
@@ -29,10 +34,16 @@ class ZombieFaible extends Zombie {
 Une classe qui hérite de Zombie et qui correspond au type des zombies moyens
 **/
 class ZombieMoyen extends Zombie {
-
-	static var pvMax = 1;
 	
-	constructor() {}
+	constructor() {
+		super();
+		
+		// Le nombre de PV max du zombie moyen
+		this.pvMax = 2;
+		
+		// Le nombre de point rapporté
+		this.gain = 3;
+	}
 
 }
 
@@ -40,10 +51,16 @@ class ZombieMoyen extends Zombie {
 Une classe qui hérite de Zombie et qui correspond au type des zombies forts
 **/
 class ZombieFort extends Zombie {
-
-	static var pvMax = 1;
 	
-	constructor() {}
+	constructor() {
+		super();
+		
+		// Le nombre de PV max du zombie fort
+		this.pvMax = 3;
+		
+		// Le nombre de point rapporté
+		this.gain = 5;
+	}
 
 }
 
@@ -53,10 +70,16 @@ Il s'agit d'un singleton
 **/
 class ZombieBoss extends Zombie {
 
-	static var boss = new ZombieBoss();
-	static var pvMmax = 1;
+	//static var boss = new ZombieBoss();
 	
-	constructor() {}
+	constructor() {
+		super();
+		
+		// Le nombre de PV max du zombie boss
+		this.pvMax = 25;
+		
+		// Le nombre de point rapporté
+		this.gain = 30;
+	}
 
 }
-
