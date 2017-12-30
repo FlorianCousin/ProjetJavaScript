@@ -155,7 +155,7 @@ var boss;
 
 var ennemis = new Image();
 ennemis.loaded = false;
-ennemis.src = "images/ennemis.png";
+ennemis.src = "images/ennemis2.png";
 ennemis.onload = function() {
 	ennemis.loaded = true;
 	afficher();
@@ -200,7 +200,7 @@ function afficher() {
 
 var grass = new Image();
 grass.loaded = false;
-grass.src = "images/foin.png";
+grass.src = "images/foin2.png";
 grass.onload = function() {
 	grass.loaded = true;
 	afficher();
