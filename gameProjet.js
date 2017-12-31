@@ -192,21 +192,21 @@ function initialiser(zombie){
 
 function afficherZombie(zombie) {
 	ctx.drawImage(ennemis, zombie.xorigine + zombie.sprite * zombie.largeur, zombie.yorigine, zombie.largeur, zombie.largeur, zombie.x, zombie.y, zombie.largeur, zombie.largeur);
-	if (zombie.pv > zombie.pvMax/2){ 
-		ctx.clearRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+	
+	if (zombie.pv > zombie.pvMax / 2) { 
+		ctx.clearRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 		ctx.fillStyle = "#00FF00";
-		ctx.fillRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+		ctx.fillRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 	}
-	else if ((zombie.pv <= zombie.pvMax/2)&&(zombie.pv > zombie.pvMax/4))
-	{ 
-		ctx.clearRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+	else if ((zombie.pv <= zombie.pvMax / 2) && (zombie.pv > zombie.pvMax / 4)) { 
+		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 		ctx.fillStyle = "#FF5B00";
-		ctx.fillRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 	}
-	else if (zombie.pv <= zombie.pvMax/4){
-		ctx.clearRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+	else if (zombie.pv <= zombie.pvMax / 4) {
+		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 		ctx.fillStyle = "#FF0000";
-		ctx.fillRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 	} 
 	
 }

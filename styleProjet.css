@@ -6,3 +6,7 @@ body {
     display: block;
     margin: 50px auto;
 }
+
+#cv {
+	cursor: url('images/cursor.png'), Crosshair;
+}
