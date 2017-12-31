@@ -8,5 +8,5 @@ body {
 }
 
 #cv {
-	cursor: url('images/cursor.png'), Crosshair;
+	cursor: url('images/cursor.png') 16 16, Crosshair;
 }
