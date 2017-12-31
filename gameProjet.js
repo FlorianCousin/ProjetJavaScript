@@ -27,9 +27,8 @@ class Zombie {
 	}
 	
 	estTouche(x, y) {
-		return (this.x < x < this.x + this.largeur) && (this.y < y < this.y + this.largeur)
+		return (( this.x < x ) && ( x < ( this.x + this.largeur ) ) && ( this.y < y ) && ( y < ( this.y + this.largeur )));
 	}
-	
 }
 
 /**
@@ -195,37 +194,54 @@ function initialiser(zombie){
 	zombie.pv = zombie.pvMax;
 }
 
+
+
 function afficherZombie(zombie) {
-	ctx.drawImage(ennemis, zombie.xorigine + zombie.sprite * zombie.largeur, zombie.yorigine, zombie.largeur, zombie.largeur, zombie.x, zombie.y, zombie.largeur, zombie.largeur);
 	
-	if (zombie.pv > zombie.pvMax / 2) { 
-		ctx.clearRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-		ctx.fillStyle = "#00FF00";
-		ctx.fillRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-	}
-	else if ((zombie.pv <= zombie.pvMax / 2) && (zombie.pv > zombie.pvMax / 4)) { 
-		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-		ctx.fillStyle = "#FF5B00";
-		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-	}
-	else if (zombie.pv <= zombie.pvMax / 4) {
-		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-		ctx.fillStyle = "#FF0000";
-		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-	} 
+	// Si le zombie rencontré n'est pas nul, alors on peut le dessiner et afficher sa barre de vie
 	
+	if (zombie != null)
+	{
+		ctx.drawImage(ennemis, zombie.xorigine + zombie.sprite * zombie.largeur, zombie.yorigine, zombie.largeur, zombie.largeur, zombie.x, zombie.y, zombie.largeur, zombie.largeur);
+		
+		if (zombie.pv > zombie.pvMax / 2)
+		{ 
+			ctx.clearRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
+			ctx.fillStyle = "#00FF00";
+			ctx.fillRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
+		}
+		
+		else if ((zombie.pv <= zombie.pvMax / 2) && (zombie.pv > zombie.pvMax / 4))
+		{ 
+			ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
+			ctx.fillStyle = "#FF5B00";
+			ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
+		}
+		
+		else if (zombie.pv <= zombie.pvMax / 4) 
+		{
+			ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
+			ctx.fillStyle = "#FF0000";
+			ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
+		}
+	
+	}
 }
 
 
 function afficher() {
+	
 	if (!(grass.loaded && ennemis.loaded)) {
 		return;
 	}
 	
 	ctx.drawImage(grass, 0, 0);
+	
 	faibles.forEach(afficherZombie);
 	moyens.forEach(afficherZombie);
 	forts.forEach(afficherZombie);
+
+	
 	if (boss != null) afficherZombie(boss);
 }
 
@@ -249,6 +265,7 @@ var joueur = function() {
 cs.onclick = function(e) {
 	var x;
 	var y;
+	//Récupération des coordonnées de la souris grâce aux fonctions Page et Client
 	if (e.pageX || e.pageY) { 
 	  x = e.pageX;
 	  y = e.pageY;
@@ -257,6 +274,8 @@ cs.onclick = function(e) {
 	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	} 
+	
+	//Résout les problèmes de bord
 	x -= cs.offsetLeft;
 	y -= cs.offsetTop;
 	
@@ -274,10 +293,17 @@ cs.onclick = function(e) {
 }
 
 function actionclique(arrayzom, x, y) {
+	//Pour chaque zombie de arrayzom
 	for (var i = 0; i < arrayzom.length; i++) {
-		if (arrayzom[i].estTouche(x, y)) {
-			if (arrayzom[i].touche()) {
-				arrayzom.slice(i, 1);
+		//Si le zombie n'est pas déjà mort
+		if (arrayzom[i] != null)
+		{
+			//S'il est touché
+			if (arrayzom[i].estTouche(x, y) === true) {
+				//S'il n'a plus de PV, alors il est mort (<=> null)
+				if (arrayzom[i].touche()) {
+					arrayzom[i] = null;
+				}
 			}
 		}
 	}
@@ -323,26 +349,29 @@ function game (ts) {
 	
 	if (ts - start.avFaibles >= ZombieFaible.time) {
 		start.avFaibles = ts;
-		faibles.forEach(function(zombie) {zombie.avancer();});
+		faibles.forEach(function(zombie) {if (zombie != null ) zombie.avancer();});
 		afficher();
 	}
 	
 	if (ts - start.avMoyens >= ZombieMoyen.time) {
 		start.avMoyens = ts;
-		moyens.forEach(function(zombie) {zombie.avancer();});
+		moyens.forEach(function(zombie) {if (zombie != null ) zombie.avancer();});
 		afficher();
 	}
 	
 	if (ts - start.avForts >= ZombieFort.time) {
 		start.avForts = ts;
-		forts.forEach(function(zombie) {zombie.avancer();});
+		forts.forEach(function(zombie) {if (zombie != null ) zombie.avancer();});
 		afficher();
 	}
 	
 	if (ts - start.avBoss >= ZombieBoss.time) {
 		start.avBoss = ts;
-		boss.avancer();
-		afficher();
+		if (boss != null)
+		{
+			boss.avancer();
+			afficher();
+		}
 	}
 
 	if (ts - start.fun1 >= 1000) {
