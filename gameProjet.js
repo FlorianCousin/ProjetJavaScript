@@ -7,7 +7,7 @@ class Zombie {
 
 	constructor() {
 		// Le nombre de PV actuel du zombie
-		this.pv = 2;
+		this.pv = 1;
 		
 		// Position en ordonnée du zombie
 		this.y = Math.round(Math.random() * 50);
@@ -19,6 +19,10 @@ class Zombie {
 	avancer() {
 		this.y += 10;
 		this.sprite = (this.sprite + 1) % 4;
+	}
+	
+	dommages(){
+		this.pv -= 1;
 	}
 	
 }
@@ -77,6 +81,7 @@ class ZombieMoyen extends Zombie {
 		
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
+		
 	}
 
 }
@@ -106,6 +111,7 @@ class ZombieFort extends Zombie {
 		
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
+		
 	}
 
 }
@@ -138,6 +144,7 @@ class ZombieBoss extends Zombie {
 		
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
+		
 	}
 
 }
@@ -168,7 +175,8 @@ forts.push(new ZombieFort());
 boss = new ZombieBoss();
 
 
-		
+
+
 
 
 
@@ -178,10 +186,29 @@ boss = new ZombieBoss();
 var cs = document.getElementById("cv");
 ctx = cs.getContext("2d");
 
-
+function initialiser(zombie){
+	zombie.pv = zombie.pvMax;
+}
 
 function afficherZombie(zombie) {
 	ctx.drawImage(ennemis, zombie.xorigine + zombie.sprite * zombie.largeur, zombie.yorigine, zombie.largeur, zombie.largeur, zombie.x, zombie.y, zombie.largeur, zombie.largeur);
+	if (zombie.pv > zombie.pvMax/2){ 
+		ctx.clearRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+		ctx.fillStyle = "#00FF00";
+		ctx.fillRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+	}
+	else if ((zombie.pv <= zombie.pvMax/2)&&(zombie.pv > zombie.pvMax/4))
+	{ 
+		ctx.clearRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+		ctx.fillStyle = "#FF5B00";
+		ctx.fillRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+	}
+	else if (zombie.pv <= zombie.pvMax/4){
+		ctx.clearRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+		ctx.fillStyle = "#FF0000";
+		ctx.fillRect(zombie.x,zombie.y-10,(zombie.pv/zombie.pvMax)*50,5);
+	} 
+	
 }
 
 
@@ -246,6 +273,10 @@ function game (ts) {
 			fun2: ts,
 			fun3: ts
 		};
+		faibles.forEach(initialiser);
+		moyens.forEach(initialiser);
+		forts.forEach(initialiser);
+		initialiser(boss);
 	}
 	
 	if (ts - start.avFaibles >= ZombieFaible.time) {
