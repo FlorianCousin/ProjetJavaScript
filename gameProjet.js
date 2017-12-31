@@ -21,8 +21,13 @@ class Zombie {
 		this.sprite = (this.sprite + 1) % 4;
 	}
 	
-	dommages(){
+	touche() {
 		this.pv -= 1;
+		return this.pv <= 0;
+	}
+	
+	estTouche(x, y) {
+		return (this.x < x < this.x + this.largeur) && (this.y < y < this.y + this.largeur)
 	}
 	
 }
@@ -240,6 +245,43 @@ var joueur = function() {
 	this.pv = 10;
 }
 
+
+cs.onclick = function(e) {
+	var x;
+	var y;
+	if (e.pageX || e.pageY) { 
+	  x = e.pageX;
+	  y = e.pageY;
+	}
+	else { 
+	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+	} 
+	x -= cs.offsetLeft;
+	y -= cs.offsetTop;
+	
+	actionclique(faibles, x, y);
+	actionclique(moyens, x, y);
+	actionclique(forts, x, y);
+	
+	if (boss.estTouche(x, y)) {
+		if (boss.touche()) {
+			boss = null;
+		}
+	}
+	
+	afficher();
+}
+
+function actionclique(arrayzom, x, y) {
+	for (var i = 0; i < arrayzom.length; i++) {
+		if (arrayzom[i].estTouche(x, y)) {
+			if (arrayzom[i].touche()) {
+				arrayzom.slice(i, 1);
+			}
+		}
+	}
+}
 
 
 
