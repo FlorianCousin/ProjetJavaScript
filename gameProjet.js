@@ -346,9 +346,9 @@ cs.onclick = function(e) {
 	x -= cs.offsetLeft;
 	y -= cs.offsetTop;
 	
-	actionclique(faibles, x, y);
-	actionclique(moyens, x, y);
-	actionclique(forts, x, y);
+	actionclique(faibles, timef, x, y);
+	actionclique(moyens, timem, x, y);
+	actionclique(forts, timeF, x, y);
 	
 	if (boss != null) {
 		if (boss.estTouche(x, y)) {
@@ -361,12 +361,13 @@ cs.onclick = function(e) {
 	afficher();
 }
 
-function actionclique(arrayzom, x, y) {
+function actionclique(arrayzom,arraytime, x, y) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].estTouche(x, y)) {
 			if (arrayzom[i].touche()) {
 				joueur.points += arrayzom[i].gain;
 				arrayzom.splice(i, 1);
+				arraytime.splice(i,1);
 			}
 		}
 	}
@@ -411,7 +412,7 @@ function timer_oeuf (arrayzom, arraytime, ts){
 		if ((ts - arraytime[i] > Zombie.timeOeuf) && (arrayzom[i]!= null)){
 			arrayzom[i].appOeuf = false;
 		}	
-		else{
+		else {
 			arrayzom[i].appOeuf = true;
 		}
 	}
@@ -454,7 +455,13 @@ function game (ts) {
 	timer_oeuf(faibles,timef,ts);
 	timer_oeuf(forts,timeF,ts);
 	timer_oeuf(moyens,timem,ts);
-	timer_oeuf(boss, timeB, ts);
+
+	if ((ts - timeB > Zombie.timeOeuf) && (boss!= null)){
+		boss.appOeuf = false;
+	}
+	else if ((ts - timeB <= Zombie.timeOeuf) && (boss!= null)){
+		boss.appOeuf = true;
+	}
 	
 	
 	if (ts >= 140000 && !ZombieBoss.apparu) {
