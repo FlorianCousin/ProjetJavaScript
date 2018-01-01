@@ -10,7 +10,7 @@ class Zombie {
 		this.pv = 1;
 		
 		// Position en ordonnée du zombie
-		this.y = Math.round(Math.random() * 50);
+		this.y = Math.round(Math.random() * 100);
 		
 		// Numéro du sprite : 1, 2, 3, ou 4
 		this.sprite = 0;
@@ -27,7 +27,7 @@ class Zombie {
 	}
 	
 	estTouche(x, y) {
-		return (this.x < x < this.x + this.largeur) && (this.y < y < this.y + this.largeur)
+		return (this.x < x && x < this.x + this.largeur) && (this.y < y && y < this.y + this.largeur);
 	}
 	
 }
@@ -198,17 +198,17 @@ function initialiser(zombie){
 function afficherZombie(zombie) {
 	ctx.drawImage(ennemis, zombie.xorigine + zombie.sprite * zombie.largeur, zombie.yorigine, zombie.largeur, zombie.largeur, zombie.x, zombie.y, zombie.largeur, zombie.largeur);
 	
-	if (zombie.pv > zombie.pvMax / 2) { 
+	if (zombie.pv == zombie.pvMax) { 
 		ctx.clearRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 		ctx.fillStyle = "#00FF00";
 		ctx.fillRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 	}
-	else if ((zombie.pv <= zombie.pvMax / 2) && (zombie.pv > zombie.pvMax / 4)) { 
+	else if ((zombie.pv < zombie.pvMax) && (zombie.pv >= zombie.pvMax / 2)) { 
 		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-		ctx.fillStyle = "#FF5B00";
+		ctx.fillStyle = "#FFBB00";
 		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 	}
-	else if (zombie.pv <= zombie.pvMax / 4) {
+	else if (zombie.pv < zombie.pvMax / 2) {
 		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
 		ctx.fillStyle = "#FF0000";
 		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
@@ -264,9 +264,11 @@ cs.onclick = function(e) {
 	actionclique(moyens, x, y);
 	actionclique(forts, x, y);
 	
-	if (boss.estTouche(x, y)) {
-		if (boss.touche()) {
-			boss = null;
+	if (boss != null) {
+		if (boss.estTouche(x, y)) {
+			if (boss.touche()) {
+				boss = null;
+			}
 		}
 	}
 	
@@ -277,7 +279,8 @@ function actionclique(arrayzom, x, y) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].estTouche(x, y)) {
 			if (arrayzom[i].touche()) {
-				arrayzom.slice(i, 1);
+				joueur.points += arrayzom[i].gain;
+				arrayzom.splice(i, 1);
 			}
 		}
 	}
@@ -294,13 +297,13 @@ function actionclique(arrayzom, x, y) {
 var start = null;
 
 function function1() {
-	console.log("function 1");
+	//console.log("function 1");
 }
 function function2() {
-	console.log("function 2");
+	//console.log("function 2");
 }
 function function3() {
-	console.log("function 3");
+	//console.log("function 3");
 }
 
 function game (ts) {
@@ -341,7 +344,9 @@ function game (ts) {
 	
 	if (ts - start.avBoss >= ZombieBoss.time) {
 		start.avBoss = ts;
-		boss.avancer();
+		if (boss!= null) {
+			boss.avancer();
+		}
 		afficher();
 	}
 
