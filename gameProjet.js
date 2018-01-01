@@ -6,8 +6,6 @@ Une classe abstraite qui correspond au type des zombie en général
 class Zombie {
 
 	constructor() {
-		// Le nombre de PV actuel du zombie
-		this.pv = 1;
 		
 		// Position en ordonnée du zombie
 		this.y = Math.round(Math.random() * 100);
@@ -32,6 +30,9 @@ class Zombie {
 	
 }
 
+// Fréquence d'apparition d'un zombie
+Zombie.freqApparition = 2000;
+
 /**
 Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
 **/
@@ -45,6 +46,9 @@ class ZombieFaible extends Zombie {
 		
 		// Le nombre de PV max du zombie faible
 		this.pvMax = 1;
+		
+		// Le nombre de PV actuel du zombie
+		this.pv = this.pvMax;
 		
 		// Le nombre de point rapporté
 		this.gain = 1;
@@ -75,6 +79,9 @@ class ZombieMoyen extends Zombie {
 		// Le nombre de PV max du zombie moyen
 		this.pvMax = 2;
 		
+		// Le nombre de PV actuel du zombie
+		this.pv = this.pvMax;
+		
 		// Le nombre de point rapporté
 		this.gain = 3;
 		
@@ -104,6 +111,9 @@ class ZombieFort extends Zombie {
 		
 		// Le nombre de PV max du zombie fort
 		this.pvMax = 3;
+		
+		// Le nombre de PV actuel du zombie
+		this.pv = this.pvMax;
 		
 		// Le nombre de point rapporté
 		this.gain = 5;
@@ -138,6 +148,9 @@ class ZombieBoss extends Zombie {
 		// Le nombre de PV max du zombie boss
 		this.pvMax = 25;
 		
+		// Le nombre de PV actuel du zombie
+		this.pv = this.pvMax;
+		
 		// Le nombre de point rapporté
 		this.gain = 30;
 		
@@ -154,8 +167,11 @@ class ZombieBoss extends Zombie {
 
 }
 
-// temps en miliseconde entre deux avancés
+// Temps en miliseconde entre deux avancés
 ZombieBoss.time = 1000;
+
+// Pour savoir si un zombie boss est apparu. L'attribut est à true si un zombie boss est déjà apparu et false sinon
+ZombieBoss.apparu = false;
 
 
 
@@ -286,6 +302,32 @@ function actionclique(arrayzom, x, y) {
 	}
 }
 
+function apparitionZombie(ts) {
+	if (ts < 30000) {
+		faibles.push(new ZombieFaible());
+	}
+	else if (ts < 100000) {
+		if (Math.random() < 0.5) {
+			faibles.push(new ZombieFaible());
+		}
+		else {
+			moyens.push(new ZombieMoyen());
+		}
+	}
+	else {
+		var ran = Math.random();
+		if (ran < 0.33) {
+			faibles.push(new ZombieFaible());
+		}
+		else if (ran < 0.67) {
+			moyens.push(new ZombieMoyen());
+		}
+		else {
+			forts.push(new ZombieFort());
+		}
+	}
+}
+
 
 
 
@@ -310,6 +352,7 @@ function game (ts) {
 	
 	if (start === null) {
 		start = {
+			apparition: ts,
 			avFaibles: ts,
 			avMoyens: ts,
 			avForts: ts,
@@ -322,6 +365,15 @@ function game (ts) {
 		moyens.forEach(initialiser);
 		forts.forEach(initialiser);
 		initialiser(boss);
+	}
+	
+	if (ts >= 140000 && !ZombieBoss.apparu) {
+		boss = new ZombieBoss();
+		ZombieBoss.apparu = true;
+	}
+	else if (ts - start.apparition >= Zombie.freqApparition) {
+		start.apparition = ts;
+		apparitionZombie(ts);
 	}
 	
 	if (ts - start.avFaibles >= ZombieFaible.time) {
