@@ -12,6 +12,9 @@ class Zombie {
 		
 		// Numéro du sprite : 1, 2, 3, ou 4
 		this.sprite = 0;
+		
+		//Position en ordonnée de l'oeuf
+		this.yOeuf = this.y - 15;
 	}
 	
 	avancer() {
@@ -32,6 +35,9 @@ class Zombie {
 
 // Fréquence d'apparition d'un zombie
 Zombie.freqApparition = 2000;
+
+//Temps en milliseconde d'apparition des oeufs  
+Zombie.timeOeuf = 3000;
 
 /**
 Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
@@ -61,11 +67,21 @@ class ZombieFaible extends Zombie {
 		
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
+		
+		//L'origine de départ de l'oeuf dans le sprite
+		this.yOrigineOeuf = 140;
+		this.xOrigineOeuf = 0;
+		
+		//Position en abscisse de l'oeuf
+		this.xOeuf = this.x;
 	}
 
 }
 
-// temps en miliseconde entre deux avancés
+// Apparition des oeufs
+ZombieFaible.appOeuf = true;
+
+// temps en milliseconde entre deux avancés
 ZombieFaible.time = 200;
 
 /**
@@ -94,11 +110,20 @@ class ZombieMoyen extends Zombie {
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
 		
+		//L'origine de départ de l'oeuf dans le sprite
+		this.yOrigineOeuf = 0;
+		this.xOrigineOeuf = 0;
+		
+		//Position en abscisse de l'oeuf
+		this.xOeuf = this.x;
 	}
 
 }
-
-// temps en miliseconde entre deux avancés
+ 
+// Apparition des oeufs
+ZombieMoyen.appOeuf = true;
+ 
+// temps en milliseconde entre deux avancés
 ZombieMoyen.time = 500;
 
 /**
@@ -127,11 +152,21 @@ class ZombieFort extends Zombie {
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
 		
+		//L'origine de départ de l'oeuf dans le sprite
+		this.yOrigineOeuf = 280;
+		this.xOrigineOeuf = 0;
+		
+		//Position en abscisse de l'oeuf
+		this.xOeuf = this.x;
+		
 	}
 
 }
 
-// temps en miliseconde entre deux avancés
+// Apparition des oeufs
+ZombieFort.appOeuf = true; 
+
+// temps en milliseconde entre deux avancés
 ZombieFort.time = 300;
 
 /**
@@ -163,9 +198,19 @@ class ZombieBoss extends Zombie {
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
 		
+		//L'origine de départ de l'oeuf dans le sprite
+		this.yOrigineOeuf = 420;
+		this.xOrigineOeuf = 0;
+		
+		//Position en abscisse de l'oeuf
+		this.xOeuf = this.x - 5;
+		
 	}
 
 }
+
+// Apparition des oeufs
+ZombieBoss.appOeuf = true;
 
 // Temps en miliseconde entre deux avancés
 ZombieBoss.time = 1000;
@@ -173,8 +218,11 @@ ZombieBoss.time = 1000;
 // Pour savoir si un zombie boss est apparu. L'attribut est à true si un zombie boss est déjà apparu et false sinon
 ZombieBoss.apparu = false;
 
-
-
+//Tableau récupérant le temps où apparaît le zombie
+var timef = new Array();
+var timem = new Array();
+var timeF = new Array();
+var timeB;
 
 var faibles = new Array();
 var moyens = new Array();
@@ -191,11 +239,14 @@ ennemis.onload = function() {
 
 
 faibles.push(new ZombieFaible());
+timef.push(0);
 moyens.push(new ZombieMoyen());
+timem.push(0);
 forts.push(new ZombieFort());
+timeF.push(0);
 boss = new ZombieBoss();
-
-
+timeB = 0;
+boss.appOeuf = true;
 
 
 
@@ -232,9 +283,14 @@ function afficherZombie(zombie) {
 	
 }
 
+function afficherOeuf(zombie){
+	if (zombie.appOeuf == true){
+		ctx.drawImage(oeuf, zombie.xOrigineOeuf, zombie.yOrigineOeuf, 250, 140, zombie.xOeuf, zombie.yOeuf, zombie.largeur + 50, zombie.largeur + 10);
+	}
+}
 
 function afficher() {
-	if (!(grass.loaded && ennemis.loaded)) {
+	if (!(grass.loaded && ennemis.loaded && oeuf.loaded)) {
 		return;
 	}
 	
@@ -242,7 +298,15 @@ function afficher() {
 	faibles.forEach(afficherZombie);
 	moyens.forEach(afficherZombie);
 	forts.forEach(afficherZombie);
-	if (boss != null) afficherZombie(boss);
+	
+	faibles.forEach(afficherOeuf);
+	moyens.forEach(afficherOeuf);
+	forts.forEach(afficherOeuf);
+	
+	if (boss != null){
+		afficherZombie(boss);
+		afficherOeuf(boss);
+	}
 }
 
 
@@ -254,7 +318,13 @@ grass.onload = function() {
 	afficher();
 };
 
-
+var oeuf = new Image();
+oeuf.loaded = false;
+oeuf.src = "images/oeufs_tombe.png";
+oeuf.onload = function(){
+	oeuf.loaded = true;
+	afficher();
+}
 
 var joueur = function() {
 	this.points = 0;
@@ -305,34 +375,47 @@ function actionclique(arrayzom, x, y) {
 function apparitionZombie(ts) {
 	if (ts < 30000) {
 		faibles.push(new ZombieFaible());
+		timef.push(ts);
 	}
 	else if (ts < 100000) {
 		if (Math.random() < 0.5) {
 			faibles.push(new ZombieFaible());
+			timef.push(ts);
 		}
 		else {
 			moyens.push(new ZombieMoyen());
+			timem.push(ts);
 		}
 	}
 	else {
 		var ran = Math.random();
 		if (ran < 0.33) {
 			faibles.push(new ZombieFaible());
+			timef.push(ts);
 		}
 		else if (ran < 0.67) {
 			moyens.push(new ZombieMoyen());
+			timem.push(ts);
 		}
 		else {
 			forts.push(new ZombieFort());
+			timeF.push(ts);
 		}
 	}
 }
 
-
-
-
-
-
+//Permet de savoir si l'oeuf doit disparaître ou non
+function timer_oeuf (arrayzom, arraytime, ts){
+	
+	for (var i = 0; i < arrayzom.length; i++){
+		if ((ts - arraytime[i] > Zombie.timeOeuf) && (arrayzom[i]!= null)){
+			arrayzom[i].appOeuf = false;
+		}	
+		else{
+			arrayzom[i].appOeuf = true;
+		}
+	}
+}
 
 /*========== Gestion du temps ==========*/
 
@@ -353,6 +436,7 @@ function game (ts) {
 	if (start === null) {
 		start = {
 			apparition: ts,
+			naissance : ts,
 			avFaibles: ts,
 			avMoyens: ts,
 			avForts: ts,
@@ -366,16 +450,23 @@ function game (ts) {
 		forts.forEach(initialiser);
 		initialiser(boss);
 	}
+		
+	timer_oeuf(faibles,timef,ts);
+	timer_oeuf(forts,timeF,ts);
+	timer_oeuf(moyens,timem,ts);
+	timer_oeuf(boss, timeB, ts);
+	
 	
 	if (ts >= 140000 && !ZombieBoss.apparu) {
 		boss = new ZombieBoss();
+		timeB = ts;
 		ZombieBoss.apparu = true;
 	}
 	else if (ts - start.apparition >= Zombie.freqApparition) {
 		start.apparition = ts;
 		apparitionZombie(ts);
 	}
-	
+		
 	if (ts - start.avFaibles >= ZombieFaible.time) {
 		start.avFaibles = ts;
 		faibles.forEach(function(zombie) {zombie.avancer();});
@@ -393,7 +484,7 @@ function game (ts) {
 		forts.forEach(function(zombie) {zombie.avancer();});
 		afficher();
 	}
-	
+		
 	if (ts - start.avBoss >= ZombieBoss.time) {
 		start.avBoss = ts;
 		if (boss!= null) {
