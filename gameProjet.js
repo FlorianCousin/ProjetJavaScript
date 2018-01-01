@@ -437,7 +437,6 @@ function game (ts) {
 	if (start === null) {
 		start = {
 			apparition: ts,
-			naissance : ts,
 			avFaibles: ts,
 			avMoyens: ts,
 			avForts: ts,
