@@ -295,17 +295,18 @@ function afficher() {
 	}
 	
 	ctx.drawImage(grass, 0, 0);
-	faibles.forEach(afficherZombie);
-	moyens.forEach(afficherZombie);
-	forts.forEach(afficherZombie);
 	
 	faibles.forEach(afficherOeuf);
 	moyens.forEach(afficherOeuf);
 	forts.forEach(afficherOeuf);
 	
+	faibles.forEach(afficherZombie);
+	moyens.forEach(afficherZombie);
+	forts.forEach(afficherZombie);
+	
 	if (boss != null){
-		afficherZombie(boss);
 		afficherOeuf(boss);
+		afficherZombie(boss);
 	}
 }
 
