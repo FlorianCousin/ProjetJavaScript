@@ -13,7 +13,7 @@ class Zombie {
 		// Numéro du sprite : 1, 2, 3, ou 4
 		this.sprite = 0;
 		
-		//Position en ordonnée de l'oeuf
+		// Position en ordonnée de l'oeuf
 		this.yOeuf = this.y - 15;
 		
 		//Pour savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non. L'attribut est à true s'il reste du temps d'affichage et false si celui-ci est dépassé. 
@@ -119,17 +119,17 @@ class ZombieFaible extends Zombie {
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
 		
-		//L'origine de départ de l'oeuf dans le sprite
+		// L'origine de départ de l'oeuf dans le sprite
 		this.yOrigineOeuf = 140;
 		this.xOrigineOeuf = 0;
 		
-		//Position en abscisse de l'oeuf
+		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
 	}
 
 }
 
-// temps en milliseconde entre deux avancés
+// Temps en milliseconde entre deux avancés
 ZombieFaible.time = 200;
 
 /**
@@ -158,17 +158,17 @@ class ZombieMoyen extends Zombie {
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
 		
-		//L'origine de départ de l'oeuf dans le sprite
+		// L'origine de départ de l'oeuf dans le sprite
 		this.yOrigineOeuf = 0;
 		this.xOrigineOeuf = 0;
 		
-		//Position en abscisse de l'oeuf
+		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
 	}
 
 }
  
-// temps en milliseconde entre deux avancés
+// Temps en milliseconde entre deux avancés
 ZombieMoyen.time = 500;
 
 /**
@@ -197,11 +197,11 @@ class ZombieFort extends Zombie {
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
 		
-		//L'origine de départ de l'oeuf dans le sprite
+		// L'origine de départ de l'oeuf dans le sprite
 		this.yOrigineOeuf = 280;
 		this.xOrigineOeuf = 0;
 		
-		//Position en abscisse de l'oeuf
+		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
 		
 	}
@@ -239,11 +239,11 @@ class ZombieBoss extends Zombie {
 		// Position en abscisse du zombie
 		this.x = Math.round(Math.random() * (600 - this.largeur));
 		
-		//L'origine de départ de l'oeuf dans le sprite
+		// L'origine de départ de l'oeuf dans le sprite
 		this.yOrigineOeuf = 420;
 		this.xOrigineOeuf = 0;
 		
-		//Position en abscisse de l'oeuf
+		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x - 5;
 		
 		ZombieBoss.apparu = true;
