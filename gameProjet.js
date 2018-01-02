@@ -1,7 +1,7 @@
 /*========== Gestion des zombies ==========*/
 
 /**
-	Une classe abstraite qui correspond au type des zombie en général
+	Une classe abstraite qui correspond au type des zombies en général
 **/
 class Zombie {
 
@@ -16,6 +16,7 @@ class Zombie {
 		//Position en ordonnée de l'oeuf
 		this.yOeuf = this.y - 15;
 		
+		//Booléen permettant de savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non
 		this.appOeauf;
 	}
 	
