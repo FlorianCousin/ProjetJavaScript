@@ -531,7 +531,34 @@ var start = null;
 	Exécutée lorsque le joueur a perdu
 **/
 function perdu() {
-	// TODO
+	cs.onclick = function() {};
+	ctx.globalAlpha = 0.5;
+	ctx.fillStyle = "#000000"; 
+	ctx.fillRect(0, 0, 600, 800);
+	ctx.globalAlpha = 1;
+	
+	ctx.font = "100px Arial";
+	ctx.fillStyle = "red";
+	ctx.fillText("Perdu", 150, 350);
+	ctx.font = "50px Arial";
+	ctx.fillText("Vous avez " + joueur.points + " points", 80, 450);
+}
+
+/**
+	Exécutée lorsque le joueur a survécu 3 minutes et 20 secondes
+**/
+function gagne() {
+	cs.onclick = function() {};
+	ctx.globalAlpha = 0.5;
+	ctx.fillStyle = "#FFFFFF"; 
+	ctx.fillRect(0, 0, 600, 800);
+	ctx.globalAlpha = 1;
+	
+	ctx.font = "100px Arial";
+	ctx.fillStyle = "green";
+	ctx.fillText("Gagné", 150, 350);
+	ctx.font = "50px Arial";
+	ctx.fillText("Vous avez " + joueur.points + " points", 80, 450);
 }
 
 
@@ -602,6 +629,9 @@ function game (ts) {
 
 	if (joueur.pv <= 0) {
 		perdu();
+	}
+	else if (ts >= 20000) {
+		gagne();
 	}
 	else {
 		requestAnimationFrame(game);
