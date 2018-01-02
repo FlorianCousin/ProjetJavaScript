@@ -15,16 +15,25 @@ class Zombie {
 		
 		//Position en ordonnée de l'oeuf
 		this.yOeuf = this.y - 15;
+		
+		this.appOeauf;
 	}
 	
 	avancer() {
 		this.y += 10;
 		this.sprite = (this.sprite + 1) % 4;
+		if (this.y > 800) {
+			joueur.pv -= 1;
+		}
 	}
 	
 	touche() {
 		this.pv -= 1;
-		return this.pv <= 0;
+		if (this.pv <= 0) {
+			joueur.points += this.gain;
+			return true;
+		}
+		return false;
 	}
 	
 	estTouche(x, y) {
@@ -36,7 +45,7 @@ class Zombie {
 // Fréquence d'apparition d'un zombie
 Zombie.freqApparition = 2000;
 
-//Temps en milliseconde d'apparition des oeufs  
+// Temps en milliseconde d'apparition des oeufs  
 Zombie.timeOeuf = 3000;
 
 /**
@@ -78,9 +87,6 @@ class ZombieFaible extends Zombie {
 
 }
 
-// Apparition des oeufs
-ZombieFaible.appOeuf = true;
-
 // temps en milliseconde entre deux avancés
 ZombieFaible.time = 200;
 
@@ -119,9 +125,6 @@ class ZombieMoyen extends Zombie {
 	}
 
 }
- 
-// Apparition des oeufs
-ZombieMoyen.appOeuf = true;
  
 // temps en milliseconde entre deux avancés
 ZombieMoyen.time = 500;
@@ -205,12 +208,11 @@ class ZombieBoss extends Zombie {
 		//Position en abscisse de l'oeuf
 		this.xOeuf = this.x - 5;
 		
+		ZombieBoss.apparu = true;
+		
 	}
 
 }
-
-// Apparition des oeufs
-ZombieBoss.appOeuf = true;
 
 // Temps en miliseconde entre deux avancés
 ZombieBoss.time = 1000;
@@ -218,7 +220,7 @@ ZombieBoss.time = 1000;
 // Pour savoir si un zombie boss est apparu. L'attribut est à true si un zombie boss est déjà apparu et false sinon
 ZombieBoss.apparu = false;
 
-//Tableau récupérant le temps où apparaît le zombie
+// Tableau récupérant le temps où apparaît le zombie
 var timef = new Array();
 var timem = new Array();
 var timeF = new Array();
@@ -253,14 +255,14 @@ boss.appOeuf = true;
 
 
 
+
+
+
 /*========== Corps ==========*/
 
 var cs = document.getElementById("cv");
 ctx = cs.getContext("2d");
 
-function initialiser(zombie){
-	zombie.pv = zombie.pvMax;
-}
 
 function afficherZombie(zombie) {
 	ctx.drawImage(ennemis, zombie.xorigine + zombie.sprite * zombie.largeur, zombie.yorigine, zombie.largeur, zombie.largeur, zombie.x, zombie.y, zombie.largeur, zombie.largeur);
@@ -406,8 +408,8 @@ function apparitionZombie(ts) {
 	}
 }
 
-//Permet de savoir si l'oeuf doit disparaître ou non
-function timer_oeuf (arrayzom, arraytime, ts){
+// Permet de savoir si l'oeuf doit disparaître ou non
+function timer_oeuf (arrayzom, arraytime, ts) {
 	
 	for (var i = 0; i < arrayzom.length; i++){
 		if ((ts - arraytime[i] > Zombie.timeOeuf) && (arrayzom[i]!= null)){
@@ -417,7 +419,17 @@ function timer_oeuf (arrayzom, arraytime, ts){
 			arrayzom[i].appOeuf = true;
 		}
 	}
+
 }
+
+
+
+
+
+
+
+
+
 
 /*========== Gestion du temps ==========*/
 
@@ -446,10 +458,6 @@ function game (ts) {
 			fun2: ts,
 			fun3: ts
 		};
-		faibles.forEach(initialiser);
-		moyens.forEach(initialiser);
-		forts.forEach(initialiser);
-		initialiser(boss);
 	}
 		
 	timer_oeuf(faibles,timef,ts);
@@ -463,11 +471,9 @@ function game (ts) {
 		boss.appOeuf = true;
 	}
 	
-	
-	if (ts >= 140000 && !ZombieBoss.apparu) {
+	if (ts >= 1400 && !ZombieBoss.apparu) {
 		boss = new ZombieBoss();
 		timeB = ts;
-		ZombieBoss.apparu = true;
 	}
 	else if (ts - start.apparition >= Zombie.freqApparition) {
 		start.apparition = ts;
