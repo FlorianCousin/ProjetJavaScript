@@ -630,7 +630,7 @@ function game (ts) {
 	if (joueur.pv <= 0) {
 		perdu();
 	}
-	else if (ts >= 20000) {
+	else if (ts >= 200000) {
 		gagne();
 	}
 	else {
