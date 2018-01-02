@@ -269,7 +269,7 @@ ennemis.onload = function() {
 	afficher();
 }
 
-
+/*
 faibles.push(new ZombieFaible());
 timef.push(0);
 moyens.push(new ZombieMoyen());
@@ -279,7 +279,7 @@ timeF.push(0);
 boss = new ZombieBoss();
 timeB = 0;
 boss.appOeuf = true;
-
+*/
 
 
 
@@ -343,6 +343,11 @@ function afficher() {
 	}
 	
 	ctx.fillRect(10, 10, 10 * joueur.pv, 10);
+	
+	ctx.font = "20px Arial";
+	ctx.fillStyle = "white";
+	ctx.fillText(tps, 580 - Math.trunc(Math.log10(tps) + 1) * 10, 20);
+	ctx.fillText("Vous avez " + joueur.points + " points", 120, 20);
 }
 
 
@@ -399,6 +404,7 @@ cs.onclick = function(e) {
 	if (boss != null) {
 		if (boss.estTouche(x, y)) {
 			if (boss.touche()) {
+				joueur.points += boss.gain;
 				boss = null;
 			}
 		}
@@ -482,7 +488,6 @@ function avanceZombie(arrayzom, arraytime) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].avancer()) {
 			joueur.pv -= 1;
-			console.log(joueur.pv);
 			arrayzom.splice(i, 1);
 			arraytime.splice(i, 1);
 		}
@@ -514,19 +519,6 @@ function timer_oeuf (arrayzom, arraytime, ts) {
 }
 
 
-
-
-
-
-
-
-
-
-/*========== Gestion du temps ==========*/
-
-var start = null;
-
-
 /**
 	Exécutée lorsque le joueur a perdu
 **/
@@ -539,7 +531,7 @@ function perdu() {
 	
 	ctx.font = "100px Arial";
 	ctx.fillStyle = "red";
-	ctx.fillText("Perdu", 150, 350);
+	ctx.fillText("You lose...", 80, 350);
 	ctx.font = "50px Arial";
 	ctx.fillText("Vous avez " + joueur.points + " points", 80, 450);
 }
@@ -556,10 +548,31 @@ function gagne() {
 	
 	ctx.font = "100px Arial";
 	ctx.fillStyle = "green";
-	ctx.fillText("Gagné", 150, 350);
+	ctx.fillText("You won !", 100, 350);
 	ctx.font = "50px Arial";
 	ctx.fillText("Vous avez " + joueur.points + " points", 80, 450);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*========== Gestion du temps ==========*/
+
+var start = null;
+
+// Temps écoulé en seconde
+var tps = 0;
+
+
 
 
 
@@ -590,6 +603,7 @@ function game (ts) {
 	}
 	
 	if (ts >= 140000 && !ZombieBoss.apparu) {
+		Zombie.freqApparition = 1000;
 		boss = new ZombieBoss();
 		timeB = ts;
 	}
@@ -626,6 +640,8 @@ function game (ts) {
 		}
 		afficher();
 	}
+	
+	tps = Math.round(ts/1000);
 
 	if (joueur.pv <= 0) {
 		perdu();
