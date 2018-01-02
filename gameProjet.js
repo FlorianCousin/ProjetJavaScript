@@ -16,24 +16,19 @@ class Zombie {
 		// Position en ordonnée de l'oeuf
 		this.yOeuf = this.y - 15;
 		
-		//Pour savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non. L'attribut est à true s'il reste du temps d'affichage et false si celui-ci est dépassé. 
+		// Pour savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non. L'attribut est à true s'il reste du temps d'affichage et false si celui-ci est dépassé. 
 		this.appOeauf;
 	}
 	
 	/**
 		Permet de faire avancer le zombie de 10 pixels et d'actualiser correctement l'attribut sprite.
-		De plus, si le zombie est en dehors de la scène, il fait perdre un pv au joueur.
 		
 		@return true si le zombie est en dehors du jeu et flse sinon.
 	**/
 	avancer() {
 		this.y += 10;
 		this.sprite = (this.sprite + 1) % 4;
-		if (this.y > 800) {
-			joueur.pv -= 1;
-			return true;
-		}
-		return false;
+		return this.y > 800;
 	}
 	
 	/**
@@ -94,9 +89,6 @@ Zombie.timeOeuf = 3000;
 	Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
 **/
 class ZombieFaible extends Zombie {
-
-	// Le nombre de point acquis à la mort d'un zombie faible
-	//static final var gain = 1;
 
 	constructor() {
 		super();
@@ -383,7 +375,9 @@ class Joueur {
 
 var joueur = new Joueur();
 
-
+/**
+	Permet de déterminer l'action à exécuter au click sur le canvas
+**/
 cs.onclick = function(e) {
 	var x;
 	var y;
@@ -475,6 +469,27 @@ function apparitionZombie(ts) {
 }
 
 /**
+	Permet de faire avancer les zombies de la liste passée en paramètre et d'actualiser
+	cette liste, la liste des temps d'apparition et les pv du joueur si un zombie sort
+	du canvas.
+	
+	@param arrayzom
+		liste de zombies
+	@param arraytime
+		liste des temps d'aparition des zombies de arraytime
+**/
+function avanceZombie(arrayzom, arraytime) {
+	for (var i = 0; i < arrayzom.length; i++) {
+		if (arrayzom[i].avancer()) {
+			joueur.pv -= 1;
+			console.log(joueur.pv);
+			arrayzom.splice(i, 1);
+			arraytime.splice(i, 1);
+		}
+	}
+}
+
+/**
 	Permet d'actualiser l'attribut appOeuf des zombie de la liste arrayzom
 	de manière à savoir quel oeuf doit disparaître ou non.
 	
@@ -511,15 +526,15 @@ function timer_oeuf (arrayzom, arraytime, ts) {
 
 var start = null;
 
-function function1() {
-	//console.log("function 1");
+
+/**
+	Exécutée lorsque le joueur a perdu
+**/
+function perdu() {
+	// TODO
 }
-function function2() {
-	//console.log("function 2");
-}
-function function3() {
-	//console.log("function 3");
-}
+
+
 
 function game (ts) {
 	
@@ -558,46 +573,39 @@ function game (ts) {
 		
 	if (ts - start.avFaibles >= ZombieFaible.time) {
 		start.avFaibles = ts;
-		faibles.forEach(function(zombie) {zombie.avancer();});
+		avanceZombie(faibles, timef);
 		afficher();
 	}
 	
 	if (ts - start.avMoyens >= ZombieMoyen.time) {
 		start.avMoyens = ts;
-		moyens.forEach(function(zombie) {zombie.avancer();});
+		avanceZombie(moyens, timem);
 		afficher();
 	}
 	
 	if (ts - start.avForts >= ZombieFort.time) {
 		start.avForts = ts;
-		forts.forEach(function(zombie) {zombie.avancer();});
+		avanceZombie(forts, timeF);
 		afficher();
 	}
 		
 	if (ts - start.avBoss >= ZombieBoss.time) {
 		start.avBoss = ts;
 		if (boss!= null) {
-			boss.avancer();
+			if (boss.avancer()) {
+				joueur.pv -= 1;
+				boss == null;
+			}
 		}
 		afficher();
 	}
 
-	if (ts - start.fun1 >= 1000) {
-		start.fun1 = ts;
-		function1();
-	} 
-
-	if (ts - start.fun2 >= 3000) {
-		start.fun2 = ts;
-		function2();
+	if (joueur.pv <= 0) {
+		perdu();
 	}
-
-	if (ts - start.fun3 >= 4000) {
-		start.fun3 = ts;
-		function3();
+	else {
+		requestAnimationFrame(game);
 	}
-
-	requestAnimationFrame(game);	
 }
 
 
