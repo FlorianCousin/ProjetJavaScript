@@ -1,7 +1,7 @@
 /*========== Gestion des zombies ==========*/
 
 /**
-Une classe abstraite qui correspond au type des zombie en général
+	Une classe abstraite qui correspond au type des zombie en général
 **/
 class Zombie {
 
@@ -19,25 +19,66 @@ class Zombie {
 		this.appOeauf;
 	}
 	
+	/**
+		Permet de faire avancer le zombie de 10 pixels et d'actualiser correctement l'attribut sprite.
+		De plus, si le zombie est en dehors de la scène, il fait perdre un pv au joueur.
+		
+		@return true si le zombie est en dehors du jeu et flse sinon.
+	**/
 	avancer() {
 		this.y += 10;
 		this.sprite = (this.sprite + 1) % 4;
 		if (this.y > 800) {
 			joueur.pv -= 1;
-		}
-	}
-	
-	touche() {
-		this.pv -= 1;
-		if (this.pv <= 0) {
-			joueur.points += this.gain;
 			return true;
 		}
 		return false;
 	}
 	
+	/**
+		Permet d'actualiser le nombre de pv du zombie en cas de touche.
+		
+		@return true si le zombie n'a plus de pv et false sinon
+	**/
+	touche() {
+		this.pv -= 1;
+		return this.pv <= 0;
+	}
+	
+	
+	/**
+		Permet de savoir si le zombie a été touché par un clique ou non.
+		L'origine est en haut à gauche du canvas, l'axe des abcsisses est croissant vers la droite et
+		l'axe des ordonnées est croissant vers le bas.
+		
+		@param x
+			abscisse du point de click
+		@param y
+			ordonnées du point de click
+		@return true si le click est sur le zombie et false sinon
+	**/
 	estTouche(x, y) {
 		return (this.x < x && x < this.x + this.largeur) && (this.y < y && y < this.y + this.largeur);
+	}
+	
+	
+	/**
+		Permet d'afficher le zombie et sa barre de vie
+	**/
+	afficher() {
+		ctx.drawImage(ennemis, this.xorigine + this.sprite * this.largeur, this.yorigine, this.largeur, this.largeur, this.x, this.y, this.largeur, this.largeur);
+		
+		if (this.pv == this.pvMax) {
+			ctx.fillStyle = "#00FF00";
+		}
+		else if ((this.pv < this.pvMax) && (this.pv >= this.pvMax / 2)) {
+			ctx.fillStyle = "#FFBB00";
+		}
+		else if (this.pv < this.pvMax / 2) {
+			ctx.fillStyle = "#FF0000";
+		}
+		
+		ctx.fillRect(this.x, this.y - 10, this.pv * this.largeur / this.pvMax, 5);
 	}
 	
 }
@@ -49,7 +90,7 @@ Zombie.freqApparition = 2000;
 Zombie.timeOeuf = 3000;
 
 /**
-Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
+	Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
 **/
 class ZombieFaible extends Zombie {
 
@@ -91,7 +132,7 @@ class ZombieFaible extends Zombie {
 ZombieFaible.time = 200;
 
 /**
-Une classe qui hérite de Zombie et qui correspond au type des zombies moyens
+	Une classe qui hérite de Zombie et qui correspond au type des zombies moyens
 **/
 class ZombieMoyen extends Zombie {
 	
@@ -130,7 +171,7 @@ class ZombieMoyen extends Zombie {
 ZombieMoyen.time = 500;
 
 /**
-Une classe qui hérite de Zombie et qui correspond au type des zombies forts
+	Une classe qui hérite de Zombie et qui correspond au type des zombies forts
 **/
 class ZombieFort extends Zombie {
 	
@@ -166,15 +207,11 @@ class ZombieFort extends Zombie {
 
 }
 
-// Apparition des oeufs
-ZombieFort.appOeuf = true; 
-
 // temps en milliseconde entre deux avancés
 ZombieFort.time = 300;
 
 /**
-Une classe qui hérite de Zombie et qui correspond au type du zombie boss
-Il s'agit d'un singleton
+	Une classe qui hérite de Zombie et qui correspond au type du zombie boss
 **/
 class ZombieBoss extends Zombie {
 
@@ -264,33 +301,24 @@ var cs = document.getElementById("cv");
 ctx = cs.getContext("2d");
 
 
-function afficherZombie(zombie) {
-	ctx.drawImage(ennemis, zombie.xorigine + zombie.sprite * zombie.largeur, zombie.yorigine, zombie.largeur, zombie.largeur, zombie.x, zombie.y, zombie.largeur, zombie.largeur);
-	
-	if (zombie.pv == zombie.pvMax) { 
-		ctx.clearRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-		ctx.fillStyle = "#00FF00";
-		ctx.fillRect(zombie.x, zombie.y-10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-	}
-	else if ((zombie.pv < zombie.pvMax) && (zombie.pv >= zombie.pvMax / 2)) { 
-		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-		ctx.fillStyle = "#FFBB00";
-		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-	}
-	else if (zombie.pv < zombie.pvMax / 2) {
-		ctx.clearRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-		ctx.fillStyle = "#FF0000";
-		ctx.fillRect(zombie.x, zombie.y - 10, (zombie.pv / zombie.pvMax) * zombie.largeur, 5);
-	} 
-	
-}
 
+
+/**
+	Permet d'afficher un oeuf
+	
+	@param zombie
+		le zombie associé à l'oeuf à afficher
+**/
 function afficherOeuf(zombie){
 	if (zombie.appOeuf == true){
 		ctx.drawImage(oeuf, zombie.xOrigineOeuf, zombie.yOrigineOeuf, 250, 140, zombie.xOeuf, zombie.yOeuf, zombie.largeur + 50, zombie.largeur + 10);
 	}
 }
 
+/**
+	Permet d'afficher entièrement ce qu'il y a à afficher dans le canvas, c'est-à-dire
+	le fond, les oeufs, les zombies, et la barre de vie du joueur.
+**/
 function afficher() {
 	if (!(grass.loaded && ennemis.loaded && oeuf.loaded)) {
 		return;
@@ -302,14 +330,26 @@ function afficher() {
 	moyens.forEach(afficherOeuf);
 	forts.forEach(afficherOeuf);
 	
-	faibles.forEach(afficherZombie);
-	moyens.forEach(afficherZombie);
-	forts.forEach(afficherZombie);
+	faibles.forEach(function(zombie) { zombie.afficher() });
+	moyens.forEach(function(zombie) { zombie.afficher() });
+	forts.forEach(function(zombie) { zombie.afficher() });
 	
 	if (boss != null){
 		afficherOeuf(boss);
-		afficherZombie(boss);
+		boss.afficher();
 	}
+	
+	if (joueur.pv == 10) {
+		ctx.fillStyle = "#00FF00";
+	}
+	else if ((joueur.pv < 10) && (joueur.pv >= 5)) {
+		ctx.fillStyle = "#FFBB00";
+	}
+	else if (joueur.pv < 5) {
+		ctx.fillStyle = "#FF0000";
+	}
+	
+	ctx.fillRect(10, 10, 10 * joueur.pv, 10);
 }
 
 
@@ -329,10 +369,18 @@ oeuf.onload = function(){
 	afficher();
 }
 
-var joueur = function() {
-	this.points = 0;
-	this.pv = 10;
+/**
+	Une classe qui correspond au joueur
+**/
+class Joueur {
+	
+	constructor() {
+		this.points = 0;
+		this.pv = 10;
+	}
 }
+
+var joueur = new Joueur();
 
 
 cs.onclick = function(e) {
@@ -364,18 +412,35 @@ cs.onclick = function(e) {
 	afficher();
 }
 
-function actionclique(arrayzom,arraytime, x, y) {
+/**
+	Permet d'actualiser l'état de zombies lorsqu'on clique
+	
+	@param arrayzom
+		liste de zombies à actualiser
+	@param arraytime
+		liste des temps auquels sont apparus les oeufs associés aux zombies de arrayzom
+	@param x
+		abscisse du click
+	@param y
+		ordonnée du click
+**/
+function actionclique(arrayzom, arraytime, x, y) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].estTouche(x, y)) {
 			if (arrayzom[i].touche()) {
 				joueur.points += arrayzom[i].gain;
 				arrayzom.splice(i, 1);
-				arraytime.splice(i,1);
+				arraytime.splice(i, 1);
 			}
 		}
 	}
 }
 
+
+/**
+	Permet de faire apparaître un zombie aléatoirement parmi les zombies disponibles.
+	La disponibilité des zombies est déterminée par le pdf du projet
+**/
 function apparitionZombie(ts) {
 	if (ts < 30000) {
 		faibles.push(new ZombieFaible());
@@ -408,11 +473,21 @@ function apparitionZombie(ts) {
 	}
 }
 
-// Permet de savoir si l'oeuf doit disparaître ou non
+/**
+	Permet d'actualiser l'attribut appOeuf des zombie de la liste arrayzom
+	de manière à savoir quel oeuf doit disparaître ou non.
+	
+	@param arrayzom
+		liste de zombies
+	@param arraytime
+		liste des temps d'apparition des oeufs associés aux zombies de la liste arrayzom
+	@param ts
+		temps en milliseconde depuis le début du jeu
+**/
 function timer_oeuf (arrayzom, arraytime, ts) {
 	
-	for (var i = 0; i < arrayzom.length; i++){
-		if ((ts - arraytime[i] > Zombie.timeOeuf) && (arrayzom[i]!= null)){
+	for (var i = 0; i < arrayzom.length; i++) {
+		if ((ts - arraytime[i] > Zombie.timeOeuf) && (arrayzom[i] != null)) {
 			arrayzom[i].appOeuf = false;
 		}	
 		else {
@@ -471,7 +546,7 @@ function game (ts) {
 		boss.appOeuf = true;
 	}
 	
-	if (ts >= 1400 && !ZombieBoss.apparu) {
+	if (ts >= 140000 && !ZombieBoss.apparu) {
 		boss = new ZombieBoss();
 		timeB = ts;
 	}
