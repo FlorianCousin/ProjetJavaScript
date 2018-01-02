@@ -16,7 +16,7 @@ class Zombie {
 		//Position en ordonnée de l'oeuf
 		this.yOeuf = this.y - 15;
 		
-		//Booléen permettant de savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non
+		//Pour savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non. L'attribut est à true s'il reste du temps d'affichage et false si celui-ci est dépassé. 
 		this.appOeauf;
 	}
 	
