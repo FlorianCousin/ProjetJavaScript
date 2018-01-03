@@ -514,8 +514,6 @@ function afficher() {
 	ctx.fillText("Vous avez " + joueur.points + " points", 150, 20);
 	
 	//Affichage de la possibilité de faire une pause
-	ctx.font  = "20px Arial";
-	ctx.fillStyle = "white";
 	ctx.fillText ("Pause : touche 'p'", 350, 20);
 }
 
@@ -564,7 +562,8 @@ var joueur = new Joueur();
 /**
 	Permet de déterminer l'action à exécuter au click sur le canvas
 **/
-cs.onclick = function(e) {
+cs.onclick = actionclick;
+function actionclick(e) {
 	// On récupère d'abord les coordonnées du click par rapport au canvas dans x et y
 	var x;
 	var y;
@@ -741,10 +740,10 @@ var pause = {
 };
 
 /**
- Executée lorsque la touche "p" est appuyée, cette fonction permet de savoir si le jeu est en pause.
- Elle permet aussi de repartir si ce dernier est en pause.
- Lorsque pause["p"] = 1, le jeu est en pause.
- Si pause["p"] = 0 alors le jeu reprend.
+	Executée lorsque la touche "p" est appuyée, cette fonction permet de savoir si le jeu est en pause.
+	Elle permet aussi de repartir si ce dernier est en pause.
+	Lorsque pause["p"] = 1, le jeu est en pause.
+	Si pause["p"] = 0 alors le jeu reprend.
 **/
 
 document.onkeydown = function(e){
@@ -752,7 +751,7 @@ document.onkeydown = function(e){
 		console.log("Non defini");
 		return;
 	}
-	else if (e.key == "p"){
+	else if (e.key == "p") {
 		if (pause["p"] == 0)
 		{
 			pause["p"] = 1;
@@ -761,6 +760,7 @@ document.onkeydown = function(e){
 		else if (pause["p"] == 1)
 		{
 			pause["p"] = 0;
+			cs.onclick = actionclick;
 			requestAnimationFrame(game);
 		}
 	}
@@ -885,15 +885,11 @@ function game (ts) {
 		else if (ts > 200000) {
 			gagne();
 		}
-		else {
+		else if (pause["p"] == 0) {
 			requestAnimationFrame(game);
 		}
 	}
 }
 
-
-if (pause["p"] == 0){
-	requestAnimationFrame(game);
-}
-
+requestAnimationFrame(game);
 
