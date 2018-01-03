@@ -38,7 +38,11 @@ class Zombie {
 	avancer() {
 		this.y += this.constructor.pas;
 		this.sprite = (this.sprite + 1) % 4;
-		return this.y > 800;
+		if (this.y > 800) {
+			this.son.pause();
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -48,7 +52,13 @@ class Zombie {
 	**/
 	touche() {
 		this.pv -= 1;
-		return this.pv <= 0;
+		this.crier();
+		if (this.pv <= 0) {
+			console.log("ici");
+			this.son.pause();
+			return true;
+		}
+		return false;
 	}
 	
 	
@@ -111,6 +121,16 @@ class ZombieFaible extends Zombie {
 		
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
+		
+		// Le son d'une poule
+		this.son = new Audio("sons/1poule.wav");
+		this.son.loop = true;
+		this.son.currentTime = Math.random() * 10;
+		this.son.play();
+	}
+	
+	crier() {
+		poulecrie.play()
 	}
 
 }
@@ -145,7 +165,7 @@ ZombieFaible.timeOeuf = 2000;
 class ZombieMoyen extends Zombie {
 	
 	constructor(tps) {
-		super(tps);
+		super(tps, "sons/1poule.wav");
 		
 		// Le nombre de PV actuel du zombie
 		this.pv = ZombieMoyen.pvMax;
@@ -155,6 +175,16 @@ class ZombieMoyen extends Zombie {
 		
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
+		
+		// Le son d'une poule
+		this.son = new Audio("sons/1poule.wav");
+		this.son.loop = true;
+		this.son.currentTime = Math.random() * 10;
+		this.son.play();
+	}
+	
+	crier() {
+		poulecrie.play()
 	}
 
 }
@@ -189,7 +219,7 @@ ZombieMoyen.timeOeuf = 3000;
 class ZombieFort extends Zombie {
 	
 	constructor(tps) {
-		super(tps);
+		super(tps, "sons/1poule.wav");
 		
 		// Le nombre de PV actuel du zombie
 		this.pv = ZombieFort.pvMax;
@@ -200,6 +230,15 @@ class ZombieFort extends Zombie {
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
 		
+		// Le son d'une poule
+		this.son = new Audio("sons/1poule.wav");
+		this.son.loop = true;
+		this.son.currentTime = Math.random() * 10;
+		this.son.play();
+	}
+	
+	crier() {
+		poulecrie.play()
 	}
 
 }
@@ -247,12 +286,20 @@ class ZombieBoss extends Zombie {
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x - 5;
 		
+		// Le son d'une vache
+		this.son = new Audio("sons/vachevenere.wav");
+		this.son.play();
+		
 		// Pour assurer l'aspect singleton de la classe
 		if (ZombieBoss.apparu) {
 			throw new Error("Erreur : la classe ZombieBoss ne peut pas être instanciée deux fois car c'est un singleton");
 		} else {
 			ZombieBoss.apparu = true;
 		}
+	}
+	
+	crier() {
+		vachemeugle.play()
 	}
 
 }
@@ -318,9 +365,10 @@ boss.appOeuf = true;
 
 var ouille = new Audio("sons/ouille.mp3");
 var mort = new Audio("sons/mort.mp3");
+var poulecrie = new Audio("sons/poulecrie.wav");
+var vachemeugle = new Audio("sons/vachemeugle.wav");
 
-var unepoule = new Audio("sons/1poule.mp3");
-unepoule.loop = true;
+
 
 
 
