@@ -346,12 +346,15 @@ ZombieBoss.timeOeuf = 10000;
 
 
 
-// Tableau de zombies faibles, moyens et forts
+// Initialisation du tableau de zombies faibles
 var faibles = new Array();
 // Histoire de commencer en beauté
 faibles.push(new ZombieFaible(0));
+// Initialisation du tableau de zombies moyens
 var moyens = new Array();
+// Initialisation du tableau de zombies forts
 var forts = new Array();
+// Déclaration du tableau du zombie boss
 var boss;
 
 var ennemis = new Image();
@@ -361,6 +364,7 @@ ennemis.onload = function() {
 	ennemis.loaded = true;
 	afficher();
 }
+
 
 
 
