@@ -307,6 +307,18 @@ boss.appOeuf = true;
 
 
 
+/*========== Gestion du sons ==========*/
+
+var ouille = new Audio("sons/ouille.mp3");
+var mort = new Audio("sons/mort.mp3");
+
+var unepoule = new Audio("sons/1poule.mp3");
+unepoule.loop = true;
+
+
+
+
+
 
 
 /*========== Gestion du sang ==========*/
@@ -464,6 +476,13 @@ class Joueur {
 		this.points = 0;
 		this.pv = 10;
 	}
+	
+	touche() {
+		this.pv -= 1;
+		if (this.pv > 0) {
+			ouille.play();
+		}
+	}
 }
 
 var joueur = new Joueur();
@@ -572,7 +591,7 @@ function apparitionZombie(ts) {
 function avanceZombie(arrayzom) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].avancer()) {
-			joueur.pv -= 1;
+			joueur.touche();
 			arrayzom.splice(i, 1);
 		}
 	}
@@ -600,6 +619,8 @@ function timer_oeuf (arrayzom, ts) {
 	Exécutée lorsque le joueur a perdu
 **/
 function perdu() {
+	mort.play();
+
 	cs.onclick = function() {};
 	ctx.globalAlpha = 0.5;
 	ctx.fillStyle = "#000000"; 
@@ -713,7 +734,7 @@ function game (ts) {
 		start.avBoss = ts;
 		if (boss != null) {
 			if (boss.avancer()) {
-				joueur.pv -= 1;
+				joueur.touche();
 				boss == null;
 			}
 		}
