@@ -362,6 +362,7 @@ var ouille = new Audio("sons/ouille.mp3");
 var mort = new Audio("sons/mort.mp3");
 var poulecrie = new Audio("sons/poulecrie.wav");
 var vachemeugle = new Audio("sons/vachemeugle.wav");
+var tir = new Audio("sons/tir.wav");
 
 
 
@@ -553,6 +554,8 @@ cs.onclick = function(e) {
 	} 
 	x -= cs.offsetLeft;
 	y -= cs.offsetTop;
+	
+	tir.play();
 	
 	actionclique(faibles, x, y);
 	actionclique(moyens, x, y);
