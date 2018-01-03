@@ -735,17 +735,36 @@ function gagne() {
 
 
 
+
+class Pause {
+	
+	constructor() {
+		// Pour savoir si on est en pause ou pas.
+		// p est à true si on est en pause et false sinon.
+		this.p = false;
+		
+		// Le temps écoulé pendant toutes les pauses de la partie en milliseconde
+		this.time = 0;
+		
+		// Le temps de mise en place de la dernière pause. mepause pour mise en pause
+		this.mepause;
+	}
+}
+		
+/*
 var pause = {
 	"p" : 0
-};
+};*/
+
+var pause = new Pause();
+
 
 /**
-	Executée lorsque la touche "p" est appuyée, cette fonction permet de savoir si le jeu est en pause.
+	Executée lorsqu'une touche est appuyée, cette fonction permet de savoir si le jeu est en pause.
 	Elle permet aussi de repartir si ce dernier est en pause.
 	Lorsque pause["p"] = 1, le jeu est en pause.
 	Si pause["p"] = 0 alors le jeu reprend.
-**/
-
+**//*
 document.onkeydown = function(e){
 	if (pause[e.key] == undefined){
 		console.log("Non defini");
@@ -765,14 +784,28 @@ document.onkeydown = function(e){
 		}
 	}
 
+}*/
+
+document.onkeydown = function(e) {
+	if (e.key != "p") {
+		console.log("Cette touche ne sert à rien");
+		return;
+	}
+	pause.p = !pause.p;
+	if (!pause.p) {
+		cs.onclick = actionclick;
+		requestAnimationFrame(game);
+	}
 }
 
+
+
 /**
-Executée dans game lorsque pause["p"] = 1, cette fonction permet de mettre en pause le jeu en affichant du texte ("Pause")
+	Executée dans game lorsqu'on est en pause, cette fonction permet de mettre l'aspect visuel du jeu en mode pause.
 **/
-function standBy (){
-	
+function enPause(){
 	cs.onclick = function() {};
+	
 	ctx.globalAlpha = 0.5;
 	ctx.fillStyle = "#FFFFFF"; 
 	ctx.fillRect(0, 0, 600, 800);
@@ -821,74 +854,81 @@ function game (ts) {
 		};
 	}
 	
-	if (pause["p"] == 1){
-		standBy();
+	if (pause.p){
+		enPause();
+		if (pause.mepause == null) {
+			pause.mepause = ts;
+		}
+	}
+	else if (pause.mepause != null) {
+		pause.time += ts - pause.mepause;
+		pause.mepause = null;
 	}
 	
-	else{	
-		timer_oeuf(faibles,ts);
-		timer_oeuf(forts,ts);
-		timer_oeuf(moyens,ts);
-		
-		if (ts - start.sang >= Sang.time) {
-			start.sang = ts;
-			sangs.forEach(function(sang) { sang.spriteSuivant() });
-		}
-
-		if (boss != null) {
-			boss.appOeuf = ts - boss.tpsApparition <= ZombieBoss.timeOeuf;
-		}
-		
-		if (ts >= 140000 && !ZombieBoss.apparu) {
-			Zombie.periodeApparition = 1000;
-			boss = new ZombieBoss(ts);
-		}
-		else if (ts - start.apparition >= Zombie.periodeApparition) {
-			start.apparition = ts;
-			apparitionZombie(ts);
-		}
-			
-		if (ts - start.avFaibles >= ZombieFaible.time) {
-			start.avFaibles = ts;
-			avanceZombie(faibles);
-			afficher();
-		}
-		
-		if (ts - start.avMoyens >= ZombieMoyen.time) {
-			start.avMoyens = ts;
-			avanceZombie(moyens);
-			afficher();
-		}
-		
-		if (ts - start.avForts >= ZombieFort.time) {
-			start.avForts = ts;
-			avanceZombie(forts);
-			afficher();
-		}
-			
-		if (ts - start.avBoss >= ZombieBoss.time) {
-			start.avBoss = ts;
-			if (boss != null) {
-				if (boss.avancer()) {
-					joueur.touche();
-					boss == null;
-				}
-			}
-			afficher();
-		}
-		
-		tps = 200 - Math.trunc(ts/1000);
-
-		if (joueur.pv <= 0) {
-			perdu();
-		}
-		else if (ts > 200000) {
-			gagne();
-		}
-		else if (pause["p"] == 0) {
-			requestAnimationFrame(game);
-		}
+	
+	timer_oeuf(faibles,ts);
+	timer_oeuf(forts,ts);
+	timer_oeuf(moyens,ts);
+	
+	if (ts - start.sang >= Sang.time) {
+		start.sang = ts;
+		sangs.forEach(function(sang) { sang.spriteSuivant() });
 	}
+
+	if (boss != null) {
+		boss.appOeuf = ts - boss.tpsApparition <= ZombieBoss.timeOeuf;
+	}
+	
+	if (ts >= 140000 && !ZombieBoss.apparu) {
+		Zombie.periodeApparition = 1000;
+		boss = new ZombieBoss(ts);
+	}
+	else if (ts - start.apparition >= Zombie.periodeApparition) {
+		start.apparition = ts;
+		apparitionZombie(ts);
+	}
+		
+	if (ts - start.avFaibles >= ZombieFaible.time) {
+		start.avFaibles = ts;
+		avanceZombie(faibles);
+		afficher();
+	}
+	
+	if (ts - start.avMoyens >= ZombieMoyen.time) {
+		start.avMoyens = ts;
+		avanceZombie(moyens);
+		afficher();
+	}
+	
+	if (ts - start.avForts >= ZombieFort.time) {
+		start.avForts = ts;
+		avanceZombie(forts);
+		afficher();
+	}
+		
+	if (ts - start.avBoss >= ZombieBoss.time) {
+		start.avBoss = ts;
+		if (boss != null) {
+			if (boss.avancer()) {
+				joueur.touche();
+				boss == null;
+			}
+		}
+		afficher();
+	}
+	
+	tps = 200 - Math.trunc((ts - pause.time) / 1000);
+
+	if (joueur.pv <= 0) {
+		perdu();
+	}
+	else if (tps < 0) {
+		gagne();
+	}
+	else if (!pause.p) {
+		requestAnimationFrame(game);
+	}
+	
 }
 
 requestAnimationFrame(game);
