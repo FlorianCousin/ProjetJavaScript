@@ -16,8 +16,36 @@ class Zombie {
 		// Position en ordonnée de l'oeuf
 		this.yOeuf = this.y - 15;
 		
-		// Pour savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non. L'attribut est à true s'il reste du temps d'affichage et false si celui-ci est dépassé. 
+		// Pour savoir si le temps durant lequel l'oeuf est affiché est écoulé ou non.
+		// L'attribut est à true s'il reste du temps d'affichage et false si celui-ci est dépassé. 
 		this.appOeauf;
+		
+		// La condition pour assurer que la classe est abstraite
+		if (this.constructor === Zombie) {
+			throw new Error("Erreur : on ne peut pas instancier la classe Zombie");
+		}
+	}
+	
+	/**
+		Retourne la classe du zombie, càd retourne ZombieFaible, ZombieMoyen, ZombieFort ou ZombieBoss
+		selon la classe dans laquelle apartient le zombie. Le zombie est forcément dans une de ces quatres
+		classes car la classe Zombie est censée être abstraite.
+		
+		@return la classe du zombie
+	**/
+	getClasse() {
+		if (this instanceof ZombieFaible) {
+			return ZombieFaible;
+		 }
+		 else if (this instanceof ZombieMoyen) {
+			return ZombieMoyen;
+		}
+		else if (this instanceof ZombieFort) {
+			return ZombieFort;
+		}
+		else if (this instanceof ZombieBoss) {
+			return ZombieBoss;
+		}
 	}
 	
 	/**
@@ -54,7 +82,7 @@ class Zombie {
 		@return true si le click est sur le zombie et false sinon
 	**/
 	estTouche(x, y) {
-		return (this.x < x && x < this.x + this.largeur) && (this.y < y && y < this.y + this.largeur);
+		return (this.x < x && x < this.x + this.getClasse().largeur) && (this.y < y && y < this.y + this.getClasse().largeur);
 	}
 	
 	
@@ -62,19 +90,22 @@ class Zombie {
 		Permet d'afficher le zombie et sa barre de vie
 	**/
 	afficher() {
-		ctx.drawImage(ennemis, this.xorigine + this.sprite * this.largeur, this.yorigine, this.largeur, this.largeur, this.x, this.y, this.largeur, this.largeur);
+		var largeur = this.getClasse().largeur;
+		ctx.drawImage(ennemis, this.getClasse().xorigine + this.sprite * largeur, this.getClasse().yorigine, largeur, largeur, this.x, this.y, largeur, largeur);
 		
-		if (this.pv == this.pvMax) {
+		var pvMax = this.getClasse().pvMax;
+		
+		if (this.pv == pvMax) {
 			ctx.fillStyle = "#00FF00";
 		}
-		else if ((this.pv < this.pvMax) && (this.pv >= this.pvMax / 2)) {
+		else if ((this.pv < pvMax) && (this.pv >= pvMax / 2)) {
 			ctx.fillStyle = "#FFBB00";
 		}
-		else if (this.pv < this.pvMax / 2) {
+		else if (this.pv < pvMax / 2) {
 			ctx.fillStyle = "#FF0000";
 		}
 		
-		ctx.fillRect(this.x, this.y - 10, this.pv * this.largeur / this.pvMax, 5);
+		ctx.fillRect(this.x, this.y - 10, this.pv * largeur / pvMax, 5);
 	}
 	
 }
@@ -93,27 +124,11 @@ class ZombieFaible extends Zombie {
 	constructor() {
 		super();
 		
-		// Le nombre de PV max du zombie faible
-		this.pvMax = 1;
-		
 		// Le nombre de PV actuel du zombie
-		this.pv = this.pvMax;
-		
-		// Le nombre de point rapporté
-		this.gain = 1;
-		
-		// L'origine de départ du sprite dans l'image de sprites
-		this.xorigine = 0;
-		this.yorigine = 0;
-		// La largeur du sprite (et aussi sa hauteur car ce sont des carrés)
-		this.largeur = 48;
+		this.pv = ZombieFaible.pvMax;
 		
 		// Position en abscisse du zombie
-		this.x = Math.round(Math.random() * (600 - this.largeur));
-		
-		// L'origine de départ de l'oeuf dans le sprite
-		this.yOrigineOeuf = 140;
-		this.xOrigineOeuf = 0;
+		this.x = Math.round(Math.random() * (600 - ZombieFaible.largeur));
 		
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
@@ -121,8 +136,24 @@ class ZombieFaible extends Zombie {
 
 }
 
+// L'origine de départ du sprite d'un zombie faible dans l'image de sprites
+ZombieFaible.xorigine = 0;
+ZombieFaible.yorigine = 0;
+// La largeur du sprite d'un zombie faible (et aussi sa hauteur car ce sont des carrés)
+ZombieFaible.largeur = 48;
+
+// Le nombre de PV max d'un zombie faible
+ZombieFaible.pvMax = 1;
+
+// Le nombre de point rapportéau joueur à la mort d'un zombie faible
+ZombieFaible.gain = 1;
+
 // Temps en milliseconde entre deux avancés
 ZombieFaible.time = 200;
+
+// L'origine de départ de l'oeuf dans l'image de sprites
+ZombieFaible.xOrigineOeuf = 0;
+ZombieFaible.yOrigineOeuf = 140;
 
 /**
 	Une classe qui hérite de Zombie et qui correspond au type des zombies moyens
@@ -132,36 +163,36 @@ class ZombieMoyen extends Zombie {
 	constructor() {
 		super();
 		
-		// Le nombre de PV max du zombie moyen
-		this.pvMax = 2;
-		
 		// Le nombre de PV actuel du zombie
-		this.pv = this.pvMax;
-		
-		// Le nombre de point rapporté
-		this.gain = 3;
-		
-		// L'origine de départ du sprite dans l'image de sprites
-		this.xorigine = 192;
-		this.yorigine = 0;
-		// La largeur du sprite (et aussi sa hauteur car ce sont des carrés)
-		this.largeur = 48;
+		this.pv = ZombieMoyen.pvMax;
 		
 		// Position en abscisse du zombie
-		this.x = Math.round(Math.random() * (600 - this.largeur));
-		
-		// L'origine de départ de l'oeuf dans le sprite
-		this.yOrigineOeuf = 0;
-		this.xOrigineOeuf = 0;
+		this.x = Math.round(Math.random() * (600 - ZombieMoyen.largeur));
 		
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
 	}
 
 }
+
+// L'origine de départ du sprite d'un zombie moyen dans l'image de sprites
+ZombieMoyen.xorigine = 192;
+ZombieMoyen.yorigine = 0;
+// La largeur du sprite d'un zombie moyen (et aussi sa hauteur car ce sont des carrés)
+ZombieMoyen.largeur = 48;
+
+// Le nombre de PV max d'un zombie moyen
+ZombieMoyen.pvMax = 2;
+
+// Le nombre de point rapporté au joueur à la mort d'un zombie moyen
+ZombieMoyen.gain = 3;
  
 // Temps en milliseconde entre deux avancés
 ZombieMoyen.time = 500;
+
+// L'origine de départ de l'oeuf dans l'image de sprites
+ZombieMoyen.xOrigineOeuf = 0;
+ZombieMoyen.yOrigineOeuf = 0;
 
 /**
 	Une classe qui hérite de Zombie et qui correspond au type des zombies forts
@@ -171,27 +202,11 @@ class ZombieFort extends Zombie {
 	constructor() {
 		super();
 		
-		// Le nombre de PV max du zombie fort
-		this.pvMax = 3;
-		
 		// Le nombre de PV actuel du zombie
-		this.pv = this.pvMax;
-		
-		// Le nombre de point rapporté
-		this.gain = 5;
-		
-		// L'origine de départ du sprite dans l'image de sprites
-		this.xorigine = 386;
-		this.yorigine = 0;
-		// La largeur du sprite (et aussi sa hauteur car ce sont des carrés)
-		this.largeur = 48;
+		this.pv = ZombieFort.pvMax;
 		
 		// Position en abscisse du zombie
-		this.x = Math.round(Math.random() * (600 - this.largeur));
-		
-		// L'origine de départ de l'oeuf dans le sprite
-		this.yOrigineOeuf = 280;
-		this.xOrigineOeuf = 0;
+		this.x = Math.round(Math.random() * (600 - ZombieFort.largeur));
 		
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x;
@@ -200,8 +215,24 @@ class ZombieFort extends Zombie {
 
 }
 
+// L'origine de départ du sprite d'un zombie fort dans l'image de sprites
+ZombieFort.xorigine = 386;
+ZombieFort.yorigine = 0;
+// La largeur du sprite d'un zombie fort (et aussi sa hauteur car ce sont des carrés)
+ZombieFort.largeur = 48;
+
+// Le nombre de PV max d'un zombie fort
+ZombieFort.pvMax = 3;
+
+// Le nombre de point rapporté au joueur à la mort d'un zombie fort
+ZombieFort.gain = 5;
+
 // temps en milliseconde entre deux avancés
 ZombieFort.time = 300;
+
+// L'origine de départ de l'oeuf dans l'image de sprites
+ZombieFort.xOrigineOeuf = 0;
+ZombieFort.yOrigineOeuf = 280;
 
 /**
 	Une classe qui hérite de Zombie et qui correspond au type du zombie boss
@@ -213,27 +244,11 @@ class ZombieBoss extends Zombie {
 	constructor() {
 		super();
 		
-		// Le nombre de PV max du zombie boss
-		this.pvMax = 25;
-		
 		// Le nombre de PV actuel du zombie
-		this.pv = this.pvMax;
-		
-		// Le nombre de point rapporté
-		this.gain = 30;
-		
-		// L'origine de départ du sprite dans l'image de sprites
-		this.xorigine = 0;
-		this.yorigine = 48;
-		// La largeur du sprite (et aussi sa hauteur car ce sont des carrés)
-		this.largeur = 64;
+		this.pv = ZombieBoss.pvMax;
 		
 		// Position en abscisse du zombie
-		this.x = Math.round(Math.random() * (600 - this.largeur));
-		
-		// L'origine de départ de l'oeuf dans le sprite
-		this.yOrigineOeuf = 420;
-		this.xOrigineOeuf = 0;
+		this.x = Math.round(Math.random() * (600 - ZombieBoss.largeur));
 		
 		// Position en abscisse de l'oeuf
 		this.xOeuf = this.x - 5;
@@ -244,11 +259,32 @@ class ZombieBoss extends Zombie {
 
 }
 
+// L'origine de départ du sprite d'un zombie boss dans l'image de sprites
+ZombieBoss.xorigine = 0;
+ZombieBoss.yorigine = 48;
+// La largeur du sprite d'un zombie boss (et aussi sa hauteur car ce sont des carrés)
+ZombieBoss.largeur = 64;
+
+// Le nombre de PV max d'un zombie boss
+ZombieBoss.pvMax = 25;
+
+// Le nombre de point rapporté au joueur à la mort d'un zombie boss
+ZombieBoss.gain = 30;
+
 // Temps en miliseconde entre deux avancés
 ZombieBoss.time = 1000;
 
+// L'origine de départ de l'oeuf dans l'image de sprites
+ZombieBoss.xOrigineOeuf = 0;
+ZombieBoss.yOrigineOeuf = 420;
+
 // Pour savoir si un zombie boss est apparu. L'attribut est à true si un zombie boss est déjà apparu et false sinon
 ZombieBoss.apparu = false;
+
+
+
+
+
 
 // Tableau récupérant le temps où apparaît le zombie
 var timef = new Array();
@@ -269,7 +305,7 @@ ennemis.onload = function() {
 	afficher();
 }
 
-/*
+
 faibles.push(new ZombieFaible());
 timef.push(0);
 moyens.push(new ZombieMoyen());
@@ -279,7 +315,12 @@ timeF.push(0);
 boss = new ZombieBoss();
 timeB = 0;
 boss.appOeuf = true;
-*/
+
+
+
+
+
+
 
 
 
@@ -304,7 +345,7 @@ ctx = cs.getContext("2d");
 **/
 function afficherOeuf(zombie){
 	if (zombie.appOeuf == true){
-		ctx.drawImage(oeuf, zombie.xOrigineOeuf, zombie.yOrigineOeuf, 250, 140, zombie.xOeuf, zombie.yOeuf, zombie.largeur + 50, zombie.largeur + 10);
+		ctx.drawImage(oeuf, zombie.getClasse().xOrigineOeuf, zombie.getClasse().yOrigineOeuf, 250, 140, zombie.xOeuf, zombie.yOeuf, zombie.getClasse().largeur + 50, zombie.getClasse().largeur + 10);
 	}
 }
 
@@ -404,7 +445,7 @@ cs.onclick = function(e) {
 	if (boss != null) {
 		if (boss.estTouche(x, y)) {
 			if (boss.touche()) {
-				joueur.points += boss.gain;
+				joueur.points += ZombieBoss.gain;
 				boss = null;
 			}
 		}
@@ -414,10 +455,10 @@ cs.onclick = function(e) {
 }
 
 /**
-	Permet d'actualiser l'état de zombies lorsqu'on clique
+	Permet d'actualiser l'état de zombies lorsqu'on clique.
 	
 	@param arrayzom
-		liste de zombies à actualiser
+		liste de zombies à actualiser. En théorie, il n'y a pas de zombie boss.
 	@param arraytime
 		liste des temps auquels sont apparus les oeufs associés aux zombies de arrayzom
 	@param x
@@ -429,7 +470,7 @@ function actionclique(arrayzom, arraytime, x, y) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].estTouche(x, y)) {
 			if (arrayzom[i].touche()) {
-				joueur.points += arrayzom[i].gain;
+				joueur.points += arrayzom[i].getClasse().gain;
 				arrayzom.splice(i, 1);
 				arraytime.splice(i, 1);
 			}
