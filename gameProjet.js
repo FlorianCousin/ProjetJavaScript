@@ -1,3 +1,5 @@
+
+
 /*========== Gestion des zombies ==========*/
 
 /**
@@ -90,8 +92,8 @@ class Zombie {
 	
 }
 
-// Fréquence d'apparition d'un zombie
-Zombie.freqApparition = 2000;
+// Période d'apparition d'un zombie en milliseconde
+Zombie.periodeApparition = 2000;
 
 // Temps en milliseconde d'apparition des oeufs  
 Zombie.timeOeuf = 3000;
@@ -291,7 +293,6 @@ ennemis.src = "images/ennemis.png";
 ennemis.onload = function() {
 	ennemis.loaded = true;
 	afficher();
-	
 }
 	
 
@@ -305,6 +306,52 @@ boss.appOeuf = true;
 
 
 
+
+
+
+/*========== Gestion du sang ==========*/
+
+class Sang {
+
+	constructor(x, y, yorigine, largeur) {
+		
+		// Coordonnées du sang
+		this.x = x;
+		this.y = y;
+		
+		// Ordonnées du premier sprite de sang
+		this.yorigine = yorigine;
+		// Largeur d'un sprite
+		this.largeur = largeur;
+		
+		// Le numéro du sprite
+		this.sprite = 0;
+		
+	}
+	
+	afficher() {
+		ctx.drawImage(imsang, this.sprite * this.largeur, this.yorigine, this.largeur, this.largeur, this.x, this.y, this.largeur, this.largeur);
+	}
+	
+	spriteSuivant() {
+		this.sprite = Math.min(this.sprite + 1, 2);
+	}
+}
+
+// Temps entre deux sprites en milliseconde
+Sang.time = 100;
+
+
+
+var imsang = new Image();
+imsang.loaded = false;
+imsang.src = "images/sang.png";
+imsang.onload = function() {
+	imsang.loaded = true;
+	afficher();
+}
+
+sangs = new Array();
 
 
 
@@ -343,7 +390,7 @@ function afficherOeuf(zombie){
 	le fond, les oeufs, les zombies, et la barre de vie du joueur.
 **/
 function afficher() {
-	if (!(grass.loaded && ennemis.loaded && oeuf.loaded)) {
+	if (!(grass.loaded && ennemis.loaded && oeuf.loaded && imsang.loaded)) {
 		return;
 	}
 	
@@ -354,6 +401,9 @@ function afficher() {
 	faibles.forEach(afficherOeuf);
 	moyens.forEach(afficherOeuf);
 	forts.forEach(afficherOeuf);
+	
+	// Affichage du sang
+	sangs.forEach(function(sang) { sang.afficher() });
 	
 	// Affichage des zombies normaux
 	faibles.forEach(function(zombie) { zombie.afficher() });
@@ -390,7 +440,7 @@ function afficher() {
 // L'image de fond
 var grass = new Image();
 grass.loaded = false;
-grass.src = "images/foin.png";
+grass.src = "images/foinsanssang.png";
 grass.onload = function() {
 	grass.loaded = true;
 	afficher();
@@ -441,10 +491,14 @@ cs.onclick = function(e) {
 	
 	if (boss != null) {
 		if (boss.estTouche(x, y)) {
+			
+			sangs.push(new Sang(boss.x, boss.y, 48, ZombieBoss.largeur));
+			
 			if (boss.touche()) {
 				joueur.points += ZombieBoss.gain;
 				boss = null;
 			}
+			
 		}
 	}
 	
@@ -464,10 +518,14 @@ cs.onclick = function(e) {
 function actionclique(arrayzom, x, y) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].estTouche(x, y)) {
+		
+			sangs.push(new Sang(arrayzom[i].x, arrayzom[i].y, 0, arrayzom[i].constructor.largeur));
+			
 			if (arrayzom[i].touche()) {
 				joueur.points += arrayzom[i].constructor.gain;
 				arrayzom.splice(i, 1);
 			}
+			
 		}
 	}
 }
@@ -599,6 +657,7 @@ function game (ts) {
 	
 	if (start === null) {
 		start = {
+			sang: ts,
 			apparition: ts,
 			avFaibles: ts,
 			avMoyens: ts,
@@ -613,16 +672,21 @@ function game (ts) {
 	timer_oeuf(faibles,ts);
 	timer_oeuf(forts,ts);
 	timer_oeuf(moyens,ts);
+	
+	if (ts - start.sang >= Sang.time) {
+		start.sang = ts;
+		sangs.forEach(function(sang) { sang.spriteSuivant() });
+	}
 
 	if (boss != null) {
 		boss.appOeuf = ts - boss.tpsApparition <= Zombie.timeOeuf;
 	}
 	
 	if (ts >= 140000 && !ZombieBoss.apparu) {
-		Zombie.freqApparition = 1000;
+		Zombie.periodeApparition = 1000;
 		boss = new ZombieBoss(ts);
 	}
-	else if (ts - start.apparition >= Zombie.freqApparition) {
+	else if (ts - start.apparition >= Zombie.periodeApparition) {
 		start.apparition = ts;
 		apparitionZombie(ts);
 	}
