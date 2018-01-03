@@ -337,6 +337,8 @@ ZombieBoss.timeOeuf = 10000;
 
 // Tableau de zombies faibles, moyens et forts
 var faibles = new Array();
+// Histoire de commencer en beauté
+faibles.push(new ZombieFaible(0));
 var moyens = new Array();
 var forts = new Array();
 var boss;
@@ -348,14 +350,7 @@ ennemis.onload = function() {
 	ennemis.loaded = true;
 	afficher();
 }
-	
 
-
-faibles.push(new ZombieFaible(0));
-moyens.push(new ZombieMoyen(0));
-forts.push(new ZombieFort(0));
-boss = new ZombieBoss(0);
-boss.appOeuf = true;
 
 
 
@@ -499,8 +494,8 @@ function afficher() {
 	// Affichage du timer et des points du joueur
 	ctx.font = "20px Arial";
 	ctx.fillStyle = "white";
-	ctx.fillText(tps, 580 - Math.trunc(Math.log10(tps) + 1) * 10, 20);
-	ctx.fillText("Vous avez " + joueur.points + " points", 120, 20);
+	ctx.fillText(Math.max(tps, 0), 580 - Math.trunc(Math.max(Math.log10(tps), 0) + 1) * 10, 20);
+	ctx.fillText("Vous avez " + joueur.points + " points", 150, 20);
 }
 
 
@@ -722,8 +717,8 @@ function gagne() {
 
 var start = null;
 
-// Temps écoulé en seconde
-var tps = 0;
+// Temps restant avant la fin de la partie en seconde
+var tps = 200;
 
 
 
@@ -796,7 +791,7 @@ function game (ts) {
 		afficher();
 	}
 	
-	tps = Math.round(ts/1000);
+	tps = 200 - Math.trunc(ts/1000);
 
 	if (joueur.pv <= 0) {
 		perdu();
