@@ -54,7 +54,6 @@ class Zombie {
 		this.pv -= 1;
 		this.crier();
 		if (this.pv <= 0) {
-			console.log("ici");
 			this.son.pause();
 			return true;
 		}
@@ -130,6 +129,9 @@ class ZombieFaible extends Zombie {
 	}
 	
 	crier() {
+		if (poulecrie.currentTime > 0) {
+			poulecrie.currentTime = 0;
+		}
 		poulecrie.play()
 	}
 
@@ -184,6 +186,9 @@ class ZombieMoyen extends Zombie {
 	}
 	
 	crier() {
+		if (poulecrie.currentTime > 0) {
+			poulecrie.currentTime = 0;
+		}
 		poulecrie.play()
 	}
 
@@ -238,6 +243,9 @@ class ZombieFort extends Zombie {
 	}
 	
 	crier() {
+		if (poulecrie.currentTime > 0) {
+			poulecrie.currentTime = 0;
+		}
 		poulecrie.play()
 	}
 
@@ -299,6 +307,9 @@ class ZombieBoss extends Zombie {
 	}
 	
 	crier() {
+		if (vachemeugle.currentTime > 0) {
+			vachemeugle.currentTime = 0;
+		}
 		vachemeugle.play()
 	}
 
@@ -531,6 +542,9 @@ class Joueur {
 	touche() {
 		this.pv -= 1;
 		if (this.pv > 0) {
+			if (ouille.currentTime > 0) {
+				ouille.currentTime = 0;
+			}
 			ouille.play();
 		}
 	}
@@ -542,6 +556,7 @@ var joueur = new Joueur();
 	Permet de déterminer l'action à exécuter au click sur le canvas
 **/
 cs.onclick = function(e) {
+	// On récupère d'abord les coordonnées du click par rapport au canvas dans x et y
 	var x;
 	var y;
 	if (e.pageX || e.pageY) { 
@@ -555,8 +570,13 @@ cs.onclick = function(e) {
 	x -= cs.offsetLeft;
 	y -= cs.offsetTop;
 	
+	// On emmet un son de tir
+	if (tir.currentTime > 0) {
+		tir.currentTime = 0;
+	}
 	tir.play();
 	
+	// On agit sur les zombie en conséquence du click
 	actionclique(faibles, x, y);
 	actionclique(moyens, x, y);
 	actionclique(forts, x, y);
@@ -574,6 +594,7 @@ cs.onclick = function(e) {
 		}
 	}
 	
+	// On actualise le plateau de jeu
 	afficher();
 }
 
