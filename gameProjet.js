@@ -95,9 +95,6 @@ class Zombie {
 // Période d'apparition d'un zombie en milliseconde
 Zombie.periodeApparition = 2000;
 
-// Temps en milliseconde d'apparition des oeufs  
-Zombie.timeOeuf = 3000;
-
 /**
 	Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
 **/
@@ -138,6 +135,9 @@ ZombieFaible.pas = 10
 // L'origine de départ de l'oeuf dans l'image de sprites
 ZombieFaible.xOrigineOeuf = 0;
 ZombieFaible.yOrigineOeuf = 140;
+
+// Temps en milliseconde d'apparition des oeufs  
+ZombieFaible.timeOeuf = 2000;
 
 /**
 	Une classe qui hérite de Zombie et qui correspond au type des zombies moyens
@@ -180,6 +180,9 @@ ZombieMoyen.pas = 5
 ZombieMoyen.xOrigineOeuf = 0;
 ZombieMoyen.yOrigineOeuf = 0;
 
+// Temps en milliseconde d'apparition des oeufs  
+ZombieMoyen.timeOeuf = 3000;
+
 /**
 	Une classe qui hérite de Zombie et qui correspond au type des zombies forts
 **/
@@ -221,6 +224,9 @@ ZombieFort.pas = 7
 // L'origine de départ de l'oeuf dans l'image de sprites
 ZombieFort.xOrigineOeuf = 0;
 ZombieFort.yOrigineOeuf = 280;
+
+// Temps en milliseconde d'apparition des oeufs  
+ZombieFort.timeOeuf = 3000;
 
 /**
 	Une classe singleton qui hérite de Zombie et qui correspond au type du zombie boss
@@ -268,14 +274,15 @@ ZombieBoss.time = 300;
 // Nombre de pixels de différence entre deux avancés
 ZombieBoss.pas = 3
 
-// L'origine de départ de l'oeuf dans l'image de sprites
+// L'origine de départ de la tombe dans l'image de sprites
 ZombieBoss.xOrigineOeuf = 0;
 ZombieBoss.yOrigineOeuf = 420;
 
 // Pour savoir si un zombie boss est apparu. L'attribut est à true si un zombie boss est déjà apparu et false sinon
 ZombieBoss.apparu = false;
 
-
+// Temps en milliseconde d'apparition de la tombe  
+ZombieBoss.timeOeuf = 10000;
 
 
 
@@ -609,7 +616,7 @@ function avanceZombie(arrayzom) {
 function timer_oeuf (arrayzom, ts) {
 	
 	for (var i = 0; i < arrayzom.length; i++) {
-		arrayzom[i].appOeuf = (ts - arrayzom[i].tpsApparition <= Zombie.timeOeuf);
+		arrayzom[i].appOeuf = (ts - arrayzom[i].tpsApparition <= arrayzom[i].constructor.timeOeuf);
 	}
 
 }
@@ -700,7 +707,7 @@ function game (ts) {
 	}
 
 	if (boss != null) {
-		boss.appOeuf = ts - boss.tpsApparition <= Zombie.timeOeuf;
+		boss.appOeuf = ts - boss.tpsApparition <= ZombieBoss.timeOeuf;
 	}
 	
 	if (ts >= 140000 && !ZombieBoss.apparu) {
