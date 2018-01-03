@@ -512,6 +512,11 @@ function afficher() {
 	ctx.fillStyle = "white";
 	ctx.fillText(Math.max(tps, 0), 580 - Math.trunc(Math.max(Math.log10(tps), 0) + 1) * 10, 20);
 	ctx.fillText("Vous avez " + joueur.points + " points", 150, 20);
+	
+	//Affichage de la possibilité de faire une pause
+	ctx.font  = "20px Arial";
+	ctx.fillStyle = "white";
+	ctx.fillText ("Pause : touche 'p'", 350, 20);
 }
 
 
@@ -731,6 +736,54 @@ function gagne() {
 
 
 
+var pause = {
+	"p" : 0
+};
+
+/**
+ Executée lorsque la touche "p" est appuyée, cette fonction permet de savoir si le jeu est en pause.
+ Elle permet aussi de repartir si ce dernier est en pause.
+ Lorsque pause["p"] = 1, le jeu est en pause.
+ Si pause["p"] = 0 alors le jeu reprend.
+**/
+
+document.onkeydown = function(e){
+	if (pause[e.key] == undefined){
+		console.log("Non defini");
+		return;
+	}
+	else if (e.key == "p"){
+		if (pause["p"] == 0)
+		{
+			pause["p"] = 1;
+	
+		}
+		else if (pause["p"] == 1)
+		{
+			pause["p"] = 0;
+			requestAnimationFrame(game);
+		}
+	}
+
+}
+
+/**
+Executée dans game lorsque pause["p"] = 1, cette fonction permet de mettre en pause le jeu en affichant du texte ("Pause")
+**/
+function standBy (){
+	
+	cs.onclick = function() {};
+	ctx.globalAlpha = 0.5;
+	ctx.fillStyle = "#FFFFFF"; 
+	ctx.fillRect(0, 0, 600, 800);
+	ctx.globalAlpha = 1;
+	
+	ctx.font = "100px Arial";
+	ctx.fillStyle = "blue";
+	ctx.fillText("Pause", 150, 350);
+	ctx.font = "30px Arial";
+	ctx.fillText("Appuyez sur 'p' pour continuer", 90, 450);
+}
 
 
 
@@ -767,72 +820,80 @@ function game (ts) {
 			fun3: ts
 		};
 	}
+	
+	if (pause["p"] == 1){
+		standBy();
+	}
+	
+	else{	
+		timer_oeuf(faibles,ts);
+		timer_oeuf(forts,ts);
+		timer_oeuf(moyens,ts);
 		
-	timer_oeuf(faibles,ts);
-	timer_oeuf(forts,ts);
-	timer_oeuf(moyens,ts);
-	
-	if (ts - start.sang >= Sang.time) {
-		start.sang = ts;
-		sangs.forEach(function(sang) { sang.spriteSuivant() });
-	}
-
-	if (boss != null) {
-		boss.appOeuf = ts - boss.tpsApparition <= ZombieBoss.timeOeuf;
-	}
-	
-	if (ts >= 140000 && !ZombieBoss.apparu) {
-		Zombie.periodeApparition = 1000;
-		boss = new ZombieBoss(ts);
-	}
-	else if (ts - start.apparition >= Zombie.periodeApparition) {
-		start.apparition = ts;
-		apparitionZombie(ts);
-	}
-		
-	if (ts - start.avFaibles >= ZombieFaible.time) {
-		start.avFaibles = ts;
-		avanceZombie(faibles);
-		afficher();
-	}
-	
-	if (ts - start.avMoyens >= ZombieMoyen.time) {
-		start.avMoyens = ts;
-		avanceZombie(moyens);
-		afficher();
-	}
-	
-	if (ts - start.avForts >= ZombieFort.time) {
-		start.avForts = ts;
-		avanceZombie(forts);
-		afficher();
-	}
-		
-	if (ts - start.avBoss >= ZombieBoss.time) {
-		start.avBoss = ts;
-		if (boss != null) {
-			if (boss.avancer()) {
-				joueur.touche();
-				boss == null;
-			}
+		if (ts - start.sang >= Sang.time) {
+			start.sang = ts;
+			sangs.forEach(function(sang) { sang.spriteSuivant() });
 		}
-		afficher();
-	}
-	
-	tps = 200 - Math.trunc(ts/1000);
 
-	if (joueur.pv <= 0) {
-		perdu();
-	}
-	else if (ts > 200000) {
-		gagne();
-	}
-	else {
-		requestAnimationFrame(game);
+		if (boss != null) {
+			boss.appOeuf = ts - boss.tpsApparition <= ZombieBoss.timeOeuf;
+		}
+		
+		if (ts >= 140000 && !ZombieBoss.apparu) {
+			Zombie.periodeApparition = 1000;
+			boss = new ZombieBoss(ts);
+		}
+		else if (ts - start.apparition >= Zombie.periodeApparition) {
+			start.apparition = ts;
+			apparitionZombie(ts);
+		}
+			
+		if (ts - start.avFaibles >= ZombieFaible.time) {
+			start.avFaibles = ts;
+			avanceZombie(faibles);
+			afficher();
+		}
+		
+		if (ts - start.avMoyens >= ZombieMoyen.time) {
+			start.avMoyens = ts;
+			avanceZombie(moyens);
+			afficher();
+		}
+		
+		if (ts - start.avForts >= ZombieFort.time) {
+			start.avForts = ts;
+			avanceZombie(forts);
+			afficher();
+		}
+			
+		if (ts - start.avBoss >= ZombieBoss.time) {
+			start.avBoss = ts;
+			if (boss != null) {
+				if (boss.avancer()) {
+					joueur.touche();
+					boss == null;
+				}
+			}
+			afficher();
+		}
+		
+		tps = 200 - Math.trunc(ts/1000);
+
+		if (joueur.pv <= 0) {
+			perdu();
+		}
+		else if (ts > 200000) {
+			gagne();
+		}
+		else {
+			requestAnimationFrame(game);
+		}
 	}
 }
 
 
-requestAnimationFrame(game);
+if (pause["p"] == 0){
+	requestAnimationFrame(game);
+}
 
 
