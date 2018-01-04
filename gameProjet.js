@@ -907,17 +907,6 @@ function game (ts) {
 		};
 	}
 	
-	if (pause.p){
-		enPause();
-		if (pause.mepause == null) {
-			pause.mepause = ts;
-		}
-	}
-	else if (pause.mepause != null) {
-		pause.time += ts - pause.mepause;
-		pause.mepause = null;
-	}
-	
 	
 	timer_oeuf(faibles,ts);
 	timer_oeuf(forts,ts);
@@ -970,16 +959,33 @@ function game (ts) {
 		afficher();
 	}
 	
+	// Lorsqu'on est en pause, le temps s'écoule quand même donc ts augmente quand même.
+	// Or, tps ne doit pas être modifié lorsqu'on est en pause.
+	// C'est pourquoi il faut enlever pause.time à ts pour avoir tps.
 	tps = 200 - Math.trunc((ts - pause.time) / 1000);
 
+	// Si le joueur n'a plus de pv, c'est perdu
 	if (joueur.pv <= 0) {
 		perdu();
 	}
+	// Si les 200 secondes sont écoulés, c'est gagné
 	else if (tps < 0) {
 		gagne();
 	}
+	// Si on n'est pas en pause, on continue
 	else if (!pause.p) {
+		if (pause.mepause != null) {
+			pause.time += ts - pause.mepause;
+			pause.mepause = null;
+		}
 		requestAnimationFrame(game);
+	}
+	// Sinon on est en pause, et dans ce cas on ne refait pas appel à requestAnimationFrame
+	else {
+		enPause();
+		if (pause.mepause == null) {
+			pause.mepause = ts;
+		}
 	}
 	
 }
