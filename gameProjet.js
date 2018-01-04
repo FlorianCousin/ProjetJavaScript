@@ -968,7 +968,7 @@ function game (ts) {
 	if (joueur.pv <= 0) {
 		perdu();
 	}
-	// Si les 200 secondes sont écoulés, c'est gagné
+	// Si les 200 secondes sont écoulées, c'est gagné
 	else if (tps < 0) {
 		gagne();
 	}
