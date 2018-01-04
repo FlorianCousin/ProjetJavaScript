@@ -2,6 +2,7 @@
 
 /*========== Gestion des zombies ==========*/
 
+
 /**
 	Une classe abstraite qui correspond au type des zombies en général
 **/
@@ -30,6 +31,7 @@ class Zombie {
 		}
 	}
 	
+	
 	/**
 		Permet de faire avancer le zombie de 10 pixels et d'actualiser correctement l'attribut sprite.
 		
@@ -39,11 +41,13 @@ class Zombie {
 		this.y += this.constructor.pas;
 		this.sprite = (this.sprite + 1) % 4;
 		if (this.y > 800) {
+			joueur.touche();
 			this.son.pause();
 			return true;
 		}
 		return false;
 	}
+	
 	
 	/**
 		Permet d'actualiser le nombre de pv du zombie en cas de touche.
@@ -54,6 +58,7 @@ class Zombie {
 		this.pv -= 1;
 		this.crier();
 		if (this.pv <= 0) {
+			joueur.points += this.constructor.gain;
 			this.son.pause();
 			return true;
 		}
@@ -73,7 +78,12 @@ class Zombie {
 		@return true si le click est sur le zombie et false sinon
 	**/
 	estTouche(x, y) {
-		return (this.x < x && x < this.x + this.constructor.largeur) && (this.y < y && y < this.y + this.constructor.largeur);
+		if (this.x < x && x < this.x + this.constructor.largeur
+			&& this.y < y && y < this.y + this.constructor.largeur) {
+			sangs.push(new Sang(this.x, this.y, 0, this.constructor.largeur));
+			return true;
+		}
+		return false;
 	}
 	
 	
@@ -104,6 +114,7 @@ class Zombie {
 // Période d'apparition d'un zombie en milliseconde
 Zombie.periodeApparition = 2000;
 
+
 /**
 	Une classe qui hérite de Zombie et qui correspond au type des zombies faibles
 **/
@@ -128,6 +139,9 @@ class ZombieFaible extends Zombie {
 		this.son.play();
 	}
 	
+	/**
+		Permet à l'ennemi de crier. Cette fonction est exécuté lorsque celui-ci est touché.
+	**/
 	crier() {
 		if (poulecrie.currentTime > 0) {
 			poulecrie.currentTime = 0;
@@ -161,6 +175,7 @@ ZombieFaible.yOrigineOeuf = 140;
 // Temps en milliseconde d'apparition des oeufs  
 ZombieFaible.timeOeuf = 2000;
 
+
 /**
 	Une classe qui hérite de Zombie et qui correspond au type des zombies moyens
 **/
@@ -185,6 +200,10 @@ class ZombieMoyen extends Zombie {
 		this.son.play();
 	}
 	
+	
+	/**
+		Permet à l'ennemi de crier. Cette fonction est exécuté lorsque celui-ci est touché.
+	**/
 	crier() {
 		if (poulecrie.currentTime > 0) {
 			poulecrie.currentTime = 0;
@@ -242,6 +261,10 @@ class ZombieFort extends Zombie {
 		this.son.play();
 	}
 	
+	
+	/**
+		Permet à l'ennemi de crier. Cette fonction est exécuté lorsque celui-ci est touché.
+	**/
 	crier() {
 		if (poulecrie.currentTime > 0) {
 			poulecrie.currentTime = 0;
@@ -275,6 +298,7 @@ ZombieFort.yOrigineOeuf = 280;
 // Temps en milliseconde d'apparition des oeufs  
 ZombieFort.timeOeuf = 3000;
 
+
 /**
 	Une classe singleton qui hérite de Zombie et qui correspond au type du zombie boss
 **/
@@ -306,6 +330,10 @@ class ZombieBoss extends Zombie {
 		}
 	}
 	
+	
+	/**
+		Permet à l'ennemi de crier. Cette fonction est exécuté lorsque celui-ci est touché.
+	**/
 	crier() {
 		if (vachemeugle.currentTime > 0) {
 			vachemeugle.currentTime = 0;
@@ -357,6 +385,7 @@ var forts = new Array();
 // Déclaration du tableau du zombie boss
 var boss;
 
+// L'image des sprites des ennemis
 var ennemis = new Image();
 ennemis.loaded = false;
 ennemis.src = "images/ennemis.png";
@@ -371,7 +400,8 @@ ennemis.onload = function() {
 
 
 
-/*========== Gestion du sons ==========*/
+
+/*========== L'ensemble des sons ==========*/
 
 var ouille = new Audio("sons/ouille.mp3");
 var mort = new Audio("sons/mort.mp3");
@@ -420,7 +450,7 @@ class Sang {
 Sang.time = 100;
 
 
-
+// L'image des srites du sang
 var imsang = new Image();
 imsang.loaded = false;
 imsang.src = "images/sang.png";
@@ -429,6 +459,7 @@ imsang.onload = function() {
 	afficher();
 }
 
+// La liste de tous les sang à afficher
 sangs = new Array();
 
 
@@ -440,13 +471,10 @@ sangs = new Array();
 
 
 
-/*========== Corps ==========*/
+/*========== Corps du programme ==========*/
 
 var cs = document.getElementById("cv");
 ctx = cs.getContext("2d");
-
-
-
 
 
 
@@ -462,6 +490,7 @@ function afficherOeuf(zombie){
 		ctx.drawImage(oeuf, zombie.constructor.xOrigineOeuf, zombie.constructor.yOrigineOeuf, 250, 140, zombie.xOeuf, zombie.yOeuf, zombie.constructor.largeur + 50, zombie.constructor.largeur + 10);
 	}
 }
+
 
 /**
 	Permet d'afficher entièrement ce qu'il y a à afficher dans le canvas, c'est-à-dire
@@ -536,33 +565,37 @@ oeuf.onload = function(){
 	afficher();
 }
 
+
 /**
-	Une classe qui correspond au joueur
+	Executée lorsqu'une touche est appuyée, cette fonction permet de mettre ou d'enlever la pause du jeu
+	en fonction de l'état actuel de celui-ci.
+	Lorsque pause.p est false au début de la fonction, le jeu se met en pause.
+	Si pause.p est true au début de la fonction, alors le jeu reprend.
 **/
-class Joueur {
-	
-	constructor() {
-		this.points = 0;
-		this.pv = 10;
+document.onkeydown = function(e) {
+	if (e.key != "p") {
+		console.log("Cette touche ne sert à rien");
+		return;
 	}
-	
-	touche() {
-		this.pv -= 1;
-		if (this.pv > 0) {
-			if (ouille.currentTime > 0) {
-				ouille.currentTime = 0;
-			}
-			ouille.play();
-		}
+	pause.p = !pause.p;
+	if (!pause.p) {
+		cs.onclick = actionclick;
+		requestAnimationFrame(game);
 	}
 }
 
-var joueur = new Joueur();
+
+// Permet de déterminer l'action à exécuter au click sur le canvas
+cs.onclick = actionclick;
 
 /**
-	Permet de déterminer l'action à exécuter au click sur le canvas
+	Exécutée lorsqu'on clique sur le canvas et que le jeu est en cours (càd ni gagné, ni perdu, ni pause).
+	Il s'agit de récupérer les coordonnées du click par rapport au canvas et d'actualiser les zombies en fonction
+	de ce click.
+	
+	@param e
+		objet associé au click
 **/
-cs.onclick = actionclick;
 function actionclick(e) {
 	// On récupère d'abord les coordonnées du click par rapport au canvas dans x et y
 	var x;
@@ -585,9 +618,9 @@ function actionclick(e) {
 	tir.play();
 	
 	// On agit sur les zombie en conséquence du click
-	actionclique(faibles, x, y);
-	actionclique(moyens, x, y);
-	actionclique(forts, x, y);
+	actualisezom(faibles, x, y);
+	actualisezom(moyens, x, y);
+	actualisezom(forts, x, y);
 	
 	if (boss != null) {
 		if (boss.estTouche(x, y)) {
@@ -606,6 +639,7 @@ function actionclick(e) {
 	afficher();
 }
 
+
 /**
 	Permet d'actualiser l'état de zombies lorsqu'on clique.
 	
@@ -616,17 +650,10 @@ function actionclick(e) {
 	@param y
 		ordonnée du click
 **/
-function actionclique(arrayzom, x, y) {
+function actualisezom(arrayzom, x, y) {
 	for (var i = 0; i < arrayzom.length; i++) {
-		if (arrayzom[i].estTouche(x, y)) {
-		
-			sangs.push(new Sang(arrayzom[i].x, arrayzom[i].y, 0, arrayzom[i].constructor.largeur));
-			
-			if (arrayzom[i].touche()) {
-				joueur.points += arrayzom[i].constructor.gain;
-				arrayzom.splice(i, 1);
-			}
-			
+		if (arrayzom[i].estTouche(x, y) && arrayzom[i].touche()) {
+			arrayzom.splice(i, 1);
 		}
 	}
 }
@@ -662,6 +689,7 @@ function apparitionZombie(ts) {
 	}
 }
 
+
 /**
 	Permet de faire avancer les zombies de la liste passée en paramètre et d'actualiser
 	cette liste, la liste des temps d'apparition et les pv du joueur si un zombie sort
@@ -673,11 +701,11 @@ function apparitionZombie(ts) {
 function avanceZombie(arrayzom) {
 	for (var i = 0; i < arrayzom.length; i++) {
 		if (arrayzom[i].avancer()) {
-			joueur.touche();
 			arrayzom.splice(i, 1);
 		}
 	}
 }
+
 
 /**
 	Permet d'actualiser l'attribut appOeuf des zombie de la liste arrayzom
@@ -689,21 +717,100 @@ function avanceZombie(arrayzom) {
 		temps en milliseconde depuis le début du jeu
 **/
 function timer_oeuf (arrayzom, ts) {
-	
 	for (var i = 0; i < arrayzom.length; i++) {
 		arrayzom[i].appOeuf = (ts - arrayzom[i].tpsApparition <= arrayzom[i].constructor.timeOeuf);
 	}
-
 }
 
 
+
+
+
+
+
+
+
+
+/*========== Des classes ==========*/
+
+
 /**
-	Exécutée lorsque le joueur a perdu
+	Une classe très simple qui permet de gérer les attributs nécessaire au bon
+	fonctionnement des pauses.
+**/
+class Pause {
+	
+	constructor() {
+		// Pour savoir si on est en pause ou pas.
+		// p est à true si on est en pause et false sinon
+		this.p = false;
+		
+		// Le temps écoulé pendant toutes les pauses de la partie en milliseconde
+		this.time = 0;
+		
+		// Le temps de mise en place de la dernière pause en milliseconde depuis l'ouverture de la page.
+		// mepause pour mise en pause
+		this.mepause;
+	}
+}
+
+var pause = new Pause();
+
+
+/**
+	Une classe qui correspond au joueur
+**/
+class Joueur {
+	
+	constructor() {
+		// Correspond aux points du joueur gagné en tuant des ennemis
+		this.points = 0;
+		
+		// Correspond au points de vie du joueur
+		this.pv = 10;
+	}
+	
+	/**
+		Exécutée lorsqu'un ennemi sort du jeu (en bas de l'écran), cette fonction
+		permet d'agir en conséquence de la perte d'un point de vie.
+	**/
+	touche() {
+		this.pv -= 1;
+		if (this.pv > 0) {
+			if (ouille.currentTime > 0) {
+				ouille.currentTime = 0;
+			}
+			ouille.play();
+		}
+		else {
+			mort.play();
+		}
+	}
+}
+
+var joueur = new Joueur();
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*========== Les fenêtres de non jeu ==========*/
+
+/**
+	Exécutée lorsque le joueur a perdu,
+	cette fonction permet de mettre l'aspect visuel du jeu en mode perdu.
 **/
 function perdu() {
-	mort.play();
-
 	cs.onclick = function() {};
+	
 	ctx.globalAlpha = 0.5;
 	ctx.fillStyle = "#000000"; 
 	ctx.fillRect(0, 0, 600, 800);
@@ -716,11 +823,14 @@ function perdu() {
 	ctx.fillText("Vous avez " + joueur.points + " points", 80, 450);
 }
 
+
 /**
-	Exécutée lorsque le joueur a survécu 3 minutes et 20 secondes
+	Exécutée lorsque le joueur a survécu 3 minutes et 20 secondes,
+	cette fonction permet de mettre l'aspect visuel du jeu en mode gagné.
 **/
 function gagne() {
 	cs.onclick = function() {};
+	
 	ctx.globalAlpha = 0.5;
 	ctx.fillStyle = "#FFFFFF"; 
 	ctx.fillRect(0, 0, 600, 800);
@@ -734,74 +844,9 @@ function gagne() {
 }
 
 
-
-
-class Pause {
-	
-	constructor() {
-		// Pour savoir si on est en pause ou pas.
-		// p est à true si on est en pause et false sinon.
-		this.p = false;
-		
-		// Le temps écoulé pendant toutes les pauses de la partie en milliseconde
-		this.time = 0;
-		
-		// Le temps de mise en place de la dernière pause. mepause pour mise en pause
-		this.mepause;
-	}
-}
-		
-/*
-var pause = {
-	"p" : 0
-};*/
-
-var pause = new Pause();
-
-
 /**
-	Executée lorsqu'une touche est appuyée, cette fonction permet de savoir si le jeu est en pause.
-	Elle permet aussi de repartir si ce dernier est en pause.
-	Lorsque pause["p"] = 1, le jeu est en pause.
-	Si pause["p"] = 0 alors le jeu reprend.
-**//*
-document.onkeydown = function(e){
-	if (pause[e.key] == undefined){
-		console.log("Non defini");
-		return;
-	}
-	else if (e.key == "p") {
-		if (pause["p"] == 0)
-		{
-			pause["p"] = 1;
-	
-		}
-		else if (pause["p"] == 1)
-		{
-			pause["p"] = 0;
-			cs.onclick = actionclick;
-			requestAnimationFrame(game);
-		}
-	}
-
-}*/
-
-document.onkeydown = function(e) {
-	if (e.key != "p") {
-		console.log("Cette touche ne sert à rien");
-		return;
-	}
-	pause.p = !pause.p;
-	if (!pause.p) {
-		cs.onclick = actionclick;
-		requestAnimationFrame(game);
-	}
-}
-
-
-
-/**
-	Executée dans game lorsqu'on est en pause, cette fonction permet de mettre l'aspect visuel du jeu en mode pause.
+	Executée dans game lorsqu'on est en pause,
+	cette fonction permet de mettre l'aspect visuel du jeu en mode pause.
 **/
 function enPause(){
 	cs.onclick = function() {};
@@ -827,6 +872,9 @@ function enPause(){
 
 
 
+
+
+
 /*========== Gestion du temps ==========*/
 
 var start = null;
@@ -837,7 +885,12 @@ var tps = 200;
 
 
 
-
+/**
+	Cette fonction permet de gérer le temps écoulé dans le jeu et d'agir en conséquence.
+	
+	@param ts
+		temps écoulé en milliseconde depuis l'ouverture de la page
+**/
 function game (ts) {
 	
 	if (start === null) {
