@@ -35,7 +35,7 @@ class Zombie {
 	/**
 		Permet de faire avancer le zombie de 10 pixels et d'actualiser correctement l'attribut sprite.
 		
-		@return true si le zombie est en dehors du jeu et flse sinon.
+		@return true si le zombie est en dehors du jeu et else sinon.
 	**/
 	avancer() {
 		this.y += this.constructor.pas;
@@ -140,7 +140,7 @@ class ZombieFaible extends Zombie {
 	}
 	
 	/**
-		Permet à l'ennemi de crier. Cette fonction est exécuté lorsque celui-ci est touché.
+		Permet à l'ennemi de crier. Cette fonction est exécutée lorsque celui-ci est touché.
 	**/
 	crier() {
 		if (poulecrie.currentTime > 0) {
@@ -160,7 +160,7 @@ ZombieFaible.largeur = 48;
 // Le nombre de PV max d'un zombie faible
 ZombieFaible.pvMax = 1;
 
-// Le nombre de point rapportéau joueur à la mort d'un zombie faible
+// Le nombre de point rapporté au joueur à la mort d'un zombie faible
 ZombieFaible.gain = 1;
 
 // Temps en milliseconde entre deux avancés
@@ -202,7 +202,7 @@ class ZombieMoyen extends Zombie {
 	
 	
 	/**
-		Permet à l'ennemi de crier. Cette fonction est exécuté lorsque celui-ci est touché.
+		Permet à l'ennemi de crier. Cette fonction est exécutée lorsque celui-ci est touché.
 	**/
 	crier() {
 		if (poulecrie.currentTime > 0) {
@@ -332,7 +332,7 @@ class ZombieBoss extends Zombie {
 	
 	
 	/**
-		Permet à l'ennemi de crier. Cette fonction est exécuté lorsque celui-ci est touché.
+		Permet à l'ennemi de crier. Cette fonction est exécutée lorsque celui-ci est touché.
 	**/
 	crier() {
 		if (vachemeugle.currentTime > 0) {
@@ -611,13 +611,13 @@ function actionclick(e) {
 	x -= cs.offsetLeft;
 	y -= cs.offsetTop;
 	
-	// On emmet un son de tir
+	// On émet un son de tir
 	if (tir.currentTime > 0) {
 		tir.currentTime = 0;
 	}
 	tir.play();
 	
-	// On agit sur les zombie en conséquence du click
+	// On agit sur les zombies en conséquence du click
 	actualisezom(faibles, x, y);
 	actualisezom(moyens, x, y);
 	actualisezom(forts, x, y);
@@ -641,7 +641,7 @@ function actionclick(e) {
 
 
 /**
-	Permet d'actualiser l'état de zombies lorsqu'on clique.
+	Permet d'actualiser l'état des zombies lorsqu'on clique.
 	
 	@param arrayzom
 		liste de zombies à actualiser. En théorie, il n'y a pas de zombie boss.
@@ -735,7 +735,7 @@ function timer_oeuf (arrayzom, ts) {
 
 
 /**
-	Une classe très simple qui permet de gérer les attributs nécessaire au bon
+	Une classe très simple qui permet de gérer les attributs nécessaires au bon
 	fonctionnement des pauses.
 **/
 class Pause {
