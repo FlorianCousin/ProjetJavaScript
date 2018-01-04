@@ -122,7 +122,7 @@ class ZombieFaible extends Zombie {
 		this.xOeuf = this.x;
 		
 		// Le son d'une poule
-		this.son = new Audio("sons/1poule.wav");
+		this.son = new Audio("sons/1poule1.wav");
 		this.son.loop = true;
 		this.son.currentTime = Math.random() * 10;
 		this.son.play();
@@ -179,7 +179,7 @@ class ZombieMoyen extends Zombie {
 		this.xOeuf = this.x;
 		
 		// Le son d'une poule
-		this.son = new Audio("sons/1poule.wav");
+		this.son = new Audio("sons/1poule2.wav");
 		this.son.loop = true;
 		this.son.currentTime = Math.random() * 10;
 		this.son.play();
@@ -236,7 +236,7 @@ class ZombieFort extends Zombie {
 		this.xOeuf = this.x;
 		
 		// Le son d'une poule
-		this.son = new Audio("sons/1poule.wav");
+		this.son = new Audio("sons/1poule3.wav");
 		this.son.loop = true;
 		this.son.currentTime = Math.random() * 10;
 		this.son.play();
