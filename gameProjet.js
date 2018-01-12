@@ -358,7 +358,7 @@ ZombieBoss.gain = 30;
 // Temps en miliseconde entre deux avancés
 ZombieBoss.time = 300;
 // Nombre de pixels de différence entre deux avancés
-ZombieBoss.pas = 3
+ZombieBoss.pas = 5;
 
 // L'origine de départ de la tombe dans l'image de sprites
 ZombieBoss.xOrigineOeuf = 0;
@@ -504,13 +504,13 @@ function afficher() {
 	// Affichage du terrain de jeu
 	ctx.drawImage(grass, 0, 0);
 	
+	// Affichage du sang
+	sangs.forEach(function(sang) { sang.afficher() });
+	
 	// Affichage des oeufs
 	faibles.forEach(afficherOeuf);
 	moyens.forEach(afficherOeuf);
 	forts.forEach(afficherOeuf);
-	
-	// Affichage du sang
-	sangs.forEach(function(sang) { sang.afficher() });
 	
 	// Affichage des zombies normaux
 	faibles.forEach(function(zombie) { zombie.afficher() });
@@ -952,8 +952,7 @@ function game (ts) {
 		start.avBoss = ts;
 		if (boss != null) {
 			if (boss.avancer()) {
-				joueur.touche();
-				boss == null;
+				boss = null;
 			}
 		}
 		afficher();
