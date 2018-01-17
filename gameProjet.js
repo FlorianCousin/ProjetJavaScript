@@ -35,7 +35,7 @@ class Zombie {
 	/**
 		Permet de faire avancer le zombie de 10 pixels et d'actualiser correctement l'attribut sprite.
 		
-		@return true si le zombie est en dehors du jeu et else sinon.
+		@return true si le zombie est en dehors du jeu et false sinon.
 	**/
 	avancer() {
 		this.y += this.constructor.pas;
@@ -67,7 +67,7 @@ class Zombie {
 	
 	
 	/**
-		Permet de savoir si le zombie a été touché par un clique ou non.
+		Permet de savoir si le zombie a été touché par un click ou non.
 		L'origine est en haut à gauche du canvas, l'axe des abcsisses est croissant vers la droite et
 		l'axe des ordonnées est croissant vers le bas.
 		
@@ -459,7 +459,7 @@ imsang.onload = function() {
 	afficher();
 }
 
-// La liste de tous les sang à afficher
+// La liste de tous les sangs à afficher
 sangs = new Array();
 
 
